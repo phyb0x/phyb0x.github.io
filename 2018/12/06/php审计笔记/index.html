@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Phyb0x's blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言虽然自己之前有整理过代码审计的入门笔记，但还是比较幼稚，自己下手分析了几个cms才逐渐悟出点道道，说白了还是从危险函数入手，分析各个漏洞原理根据危险函数溯源，结合灰盒进行审计。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="php审计笔记">
+<meta property="og:url" content="http://yoursite.com/2018/12/06/php%E5%AE%A1%E8%AE%A1%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Phyb0x&#39;s blog">
+<meta property="og:description" content="前言虽然自己之前有整理过代码审计的入门笔记，但还是比较幼稚，自己下手分析了几个cms才逐渐悟出点道道，说白了还是从危险函数入手，分析各个漏洞原理根据危险函数溯源，结合灰盒进行审计。">
+<meta property="article:published_time" content="2018-12-06T14:11:54.000Z">
+<meta property="article:modified_time" content="2020-01-12T01:11:20.000Z">
+<meta property="article:author" content="Phyb0x">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/12/06/php审计笔记/"/>
+
+
+
+
+
+  <title>php审计笔记 | Phyb0x's blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/phyb0x" target="_blank" rel="noopener"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Phyb0x's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/06/php%E5%AE%A1%E8%AE%A1%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Phyb0x">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://b-ssl.duitang.com/uploads/item/201710/05/20171005185843_HmGKQ.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Phyb0x's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">php审计笔记</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-06T22:11:54+08:00">
+                2018-12-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" itemprop="url" rel="index">
+                    <span itemprop="name">代码审计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>虽然自己之前有整理过代码审计的入门笔记，但还是比较幼稚，自己下手分析了几个cms才逐渐悟出点道道，说白了还是从危险函数入手，分析各个漏洞原理根据危险函数溯源，结合灰盒进行审计。</p>
+<a id="more"></a>
+
+
+<h2 id="危险函数集锦与漏洞挖掘"><a href="#危险函数集锦与漏洞挖掘" class="headerlink" title="危险函数集锦与漏洞挖掘"></a>危险函数集锦与漏洞挖掘</h2><h3 id="php-ini"><a href="#php-ini" class="headerlink" title="php.ini"></a>php.ini</h3><h4 id="register-globals"><a href="#register-globals" class="headerlink" title="register_globals"></a>register_globals</h4><p>直接把用户GET/POST提交的变量注册成全局变量。 php&lt;5.4.0</p>
+<h4 id="allow-url-include"><a href="#allow-url-include" class="headerlink" title="allow_url_include"></a>allow_url_include</h4><p>远程文件包含，提交参数直接执行php。</p>
+<pre><code>include $_GET[&apos;a&apos;]</code></pre><h4 id="magic-quotes-gpc"><a href="#magic-quotes-gpc" class="headerlink" title="magic_quotes_gpc"></a>magic_quotes_gpc</h4><p>魔术引号自动过滤 GET/POST/COOKIE 但是不会处理$_SERVER(client-ip/referer注入)  php&lt;5.4</p>
+<h4 id="magic-quotes-runtime"><a href="#magic-quotes-runtime" class="headerlink" title="magic_quotes_runtime"></a>magic_quotes_runtime</h4><p>作用同上，受体数据库或者文件中获取的数据 php&lt;5.4</p>
+<h4 id="safe-mode"><a href="#safe-mode" class="headerlink" title="safe_mode"></a>safe_mode</h4><p>安全模式，开启是会对危险函数进行限制，可以使用<code>safe_mode_exec_dir</code>指向可以操作危险函数的目录</p>
+<h4 id="open-basedir"><a href="#open-basedir" class="headerlink" title="open_basedir"></a>open_basedir</h4><p>限制php可以访问的目录</p>
+<h4 id="disable-functions"><a href="#disable-functions" class="headerlink" title="disable_functions"></a>disable_functions</h4><p>禁用函数，通过他禁用危险函数。<code>dl()</code>也要禁用，它可以加载PHP扩展绕过限制(安全模式下禁用)</p>
+<h4 id="display-errors-error-reporting"><a href="#display-errors-error-reporting" class="headerlink" title="display_errors error_reporting"></a>display_errors error_reporting</h4><p>错误回显</p>
+<h3 id="漏洞挖掘"><a href="#漏洞挖掘" class="headerlink" title="漏洞挖掘"></a>漏洞挖掘</h3><h4 id="SQL注入"><a href="#SQL注入" class="headerlink" title="SQL注入"></a>SQL注入</h4><p>老生常谈的了，不去讲原理直接说一下关键字。</p>
+<pre><code>select from、mysql_connect、mysql_query、mysql_fetch_now、update、insert、delete</code></pre><h5 id="宽字节注入"><a href="#宽字节注入" class="headerlink" title="宽字节注入"></a>宽字节注入</h5><pre><code>set character_set_client=gbk
+set names &apos;gbk&apos;
+mysql_set_charset(&apos;gbk&apos;)</code></pre><p>一般情况下 <code>set names &#39;gbk&#39;</code>还是存在漏洞，官方推荐    <code>mysql_set_charset</code>也是调用<code>set names &#39;gbk&#39;</code> ，还是要配合</p>
+<pre><code>mysql_real_escape_string</code></pre><p>修复建议使用PDO或者在查询之前先执行<code>set names &#39;gbk&#39;,character_set_client=binary</code></p>
+<h5 id="二次urldecode注入"><a href="#二次urldecode注入" class="headerlink" title="二次urldecode注入"></a>二次urldecode注入</h5><p>提交参数到WebServer时会自动进行URL解码，<code>id=%2527</code>里面没有单引号所以可以绕过GPC，这时使用</p>
+<pre><code>urldecode
+rawurldecode</code></pre><p>解码参数会造成单引号绕过引发注入。</p>
+<h5 id="漏洞防范"><a href="#漏洞防范" class="headerlink" title="漏洞防范"></a>漏洞防范</h5><pre><code>addslashes
+mysql_escape_string
+intval
+PDO</code></pre><h4 id="XSS"><a href="#XSS" class="headerlink" title="XSS"></a>XSS</h4><p>找没有被过滤的参数直接输出触发漏洞。</p>
+<p>直接找一些输出函数</p>
+<pre><code>print、print_r、echo、printf、sprintf、die、var_dump、var_export</code></pre><h4 id="CSRF"><a href="#CSRF" class="headerlink" title="CSRF"></a>CSRF</h4><p>越权在没有token限制下诱导高权限用户点击业务操作。黑盒测试在非静态页面看有没有token，去掉referer访问看返回值。</p>
+<pre><code>token
+referer</code></pre><h4 id="文件操作漏洞"><a href="#文件操作漏洞" class="headerlink" title="文件操作漏洞"></a>文件操作漏洞</h4><h5 id="文件包含"><a href="#文件包含" class="headerlink" title="文件包含"></a>文件包含</h5><pre><code>include()、include_once()//遇到错误继续执行
+require()、require_once()//遇到错误退出程序</code></pre><p>包含日志图片等。</p>
+<h5 id="文件包含截断"><a href="#文件包含截断" class="headerlink" title="文件包含截断"></a>文件包含截断</h5><pre><code>%00截断   php&lt;5.3  受限GPC/addslashes
+./截断 Windows 240(./) Linux 2038 (./) 不受限GPC PHP&lt;5.3
+?伪截断  把？后的内容当做参数  不受版本与GPC限制</code></pre><h5 id="文件读取"><a href="#文件读取" class="headerlink" title="文件读取"></a>文件读取</h5><pre><code>file_get_contents()、highlight_file()、fopen()、readfile()、fread()、fgetss()、fgets()、parse_ini_file()、show_source()、file()</code></pre><h5 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h5><pre><code>move_uploaded_file()</code></pre><p>上传函数只有这一个，别名绕过黑名单、GIF89a、文件类型、截断上传….</p>
+<h5 id="文件删除"><a href="#文件删除" class="headerlink" title="文件删除"></a>文件删除</h5><p>文件名字可以用../跳转</p>
+<pre><code>unlink()
+session_destroy()</code></pre><p>黑盒去找功能点，找文件名参数传递过程看是否可控</p>
+<h4 id="代码执行"><a href="#代码执行" class="headerlink" title="代码执行"></a>代码执行</h4><p>可以把代码注入到应用中去执行。</p>
+<pre><code>eval()、assert()、preg_replace()、call_user_func()、call_user_func_array()、array_map()等</code></pre><p>还有动态函数的代码执行</p>
+<pre><code>$_GET($POST[&quot;xx&quot;])</code></pre><h4 id="命令执行"><a href="#命令执行" class="headerlink" title="命令执行"></a>命令执行</h4><p>直接执行系统命令。</p>
+<pre><code>system()、exec()、shell_exec()、passthru()、pcntl_exec()、popen()、proc_open()一共七个函数，反引号也可以(`)</code></pre><h4 id="变量覆盖漏洞"><a href="#变量覆盖漏洞" class="headerlink" title="变量覆盖漏洞"></a>变量覆盖漏洞</h4><p>我们自定义的参数值替换程序原有的变量值。</p>
+<pre><code>extract()、parse_str()/import_request_variables()使用这个函数相当于开启注册了全局变量(5-5.4)。$$</code></pre><h4 id="逻辑漏洞"><a href="#逻辑漏洞" class="headerlink" title="逻辑漏洞"></a>逻辑漏洞</h4><p>重装，修改密码，越权，验证，cookie等。</p>
+<h5 id="判断绕过"><a href="#判断绕过" class="headerlink" title="判断绕过"></a>判断绕过</h5><pre><code>in_array() 判断在不在数组内，比较之前自动进行类型转换
+is_numeric() 传入hex判断为true，mysql可以使用hex代替字符串，易引发注入xss
+== 双等于判断之前先做类型抓换</code></pre><h5 id="未die-、exit-、return"><a href="#未die-、exit-、return" class="headerlink" title="未die()、exit()、return()"></a>未die()、exit()、return()</h5><h4 id="小技巧"><a href="#小技巧" class="headerlink" title="小技巧"></a>小技巧</h4><h5 id="GPC"><a href="#GPC" class="headerlink" title="GPC"></a>GPC</h5><p><code>$_SERVER</code>函数获取的header字段不受GPC影响。</p>
+<h5 id="编码转换-宽字节注入"><a href="#编码转换-宽字节注入" class="headerlink" title="编码转换(宽字节注入)"></a>编码转换(宽字节注入)</h5><h5 id="字符截断"><a href="#字符截断" class="headerlink" title="字符截断"></a>字符截断</h5><pre><code>%00
+iconv() 转码时char(128-255)截断</code></pre><h5 id="php-输入输出流"><a href="#php-输入输出流" class="headerlink" title="php://输入输出流"></a>php://输入输出流</h5><pre><code>php://stdin
+php://stdout
+php://stderr
+php://input
+php://output
+php://fd
+php://memory
+php://temp
+php://filter</code></pre><h5 id="正则表达没有使用限定符"><a href="#正则表达没有使用限定符" class="headerlink" title="正则表达没有使用限定符(^ $)"></a>正则表达没有使用限定符(^ $)</h5>
+      
+    </div>
+    
+    
+    
+
+    
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script type="text/javascript" src="http://jslibs.wuxubj.cn/sweetalert_mini/jquery-1.7.1.min.js"></script>
+  <script src="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.mini.css">
+  <p><span>文章作者:</span><a href="/" title="访问 Phyb0x 的个人博客">Phyb0x</a></p>
+  <p><span>最后更新:</span>2020年01月12日 09:01:20</p>
+  <p><span>原始链接:</span><a href="/2018/12/06/php%E5%AE%A1%E8%AE%A1%E7%AC%94%E8%AE%B0/" title="php审计笔记">http://yoursite.com/2018/12/06/php%E5%AE%A1%E8%AE%A1%E7%AC%94%E8%AE%B0/</a></p>
+  <p><span>版权声明:</span>本博客所有文章除特别声明外，均采用 <i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" title="Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)"> BY-NC-SA 3.0 许可协议</a>，转载请注明出处！</p>  
+</div>
+
+      
+    </div>
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>万一有人点了呢！</div>
+  <button id="rewardButton" disable="enable" style="width: 80px;line-height: 38px;text-align: center;font-weight: bold;color: #fff;border-radius: 5px;
+margin:0 20px 20px 0;position: relative;overflow: hidden;color: #8c96a0;text-shadow:1px 1px 1px #fff;border:1px solid #dce1e6;box-shadow: 0 1px 2px #fff inset,0 -1px 0 #a8abae inset;background: -webkit-linear-gradient(top,#f2f3f7,#e4e8ec);background: -moz-linear-gradient(top,#f2f3f7,#e4e8ec);background: linear-gradient(top,#f2f3f7,#e4e8ec);" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    打赏
+  </button>
+  <div id="QR" style="display: none;">
+    
+      <div id="wechat" style="display: inline-block;width:150px;height:150px">
+        <img id="wechat_qr" src="/images/wechat.png" alt="Phyb0x WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+    
+    
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/01/powershell%E8%BF%90%E7%94%A8/" rel="next" title="powershell运用">
+                <i class="fa fa-chevron-left"></i> powershell运用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/11/sql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/" rel="prev" title="sql注入小结">
+                sql注入小结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://b-ssl.duitang.com/uploads/item/201710/05/20171005185843_HmGKQ.jpeg"
+                alt="Phyb0x" />
+            
+              <p class="site-author-name" itemprop="name">Phyb0x</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://cdusec.happyhacking.top" title="CDUSEC" target="_blank">CDUSEC</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://nbsec.xyz/" title="大熊's Blog" target="_blank">大熊's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://a3ura.github.io/" title="a3ura's Blog" target="_blank">a3ura's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://a-running-snail2333.github.io/blog.github.io/" title="a-running-snail's Blog" target="_blank">a-running-snail's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#危险函数集锦与漏洞挖掘"><span class="nav-number"></span> <span class="nav-text">危险函数集锦与漏洞挖掘</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#php-ini"><span class="nav-number">1.</span> <span class="nav-text">php.ini</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#register-globals"><span class="nav-number">1.1.</span> <span class="nav-text">register_globals</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#allow-url-include"><span class="nav-number">1.2.</span> <span class="nav-text">allow_url_include</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#magic-quotes-gpc"><span class="nav-number">1.3.</span> <span class="nav-text">magic_quotes_gpc</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#magic-quotes-runtime"><span class="nav-number">1.4.</span> <span class="nav-text">magic_quotes_runtime</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#safe-mode"><span class="nav-number">1.5.</span> <span class="nav-text">safe_mode</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#open-basedir"><span class="nav-number">1.6.</span> <span class="nav-text">open_basedir</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#disable-functions"><span class="nav-number">1.7.</span> <span class="nav-text">disable_functions</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#display-errors-error-reporting"><span class="nav-number">1.8.</span> <span class="nav-text">display_errors error_reporting</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#漏洞挖掘"><span class="nav-number">2.</span> <span class="nav-text">漏洞挖掘</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SQL注入"><span class="nav-number">2.1.</span> <span class="nav-text">SQL注入</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#宽字节注入"><span class="nav-number">2.1.1.</span> <span class="nav-text">宽字节注入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#二次urldecode注入"><span class="nav-number">2.1.2.</span> <span class="nav-text">二次urldecode注入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#漏洞防范"><span class="nav-number">2.1.3.</span> <span class="nav-text">漏洞防范</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#XSS"><span class="nav-number">2.2.</span> <span class="nav-text">XSS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CSRF"><span class="nav-number">2.3.</span> <span class="nav-text">CSRF</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文件操作漏洞"><span class="nav-number">2.4.</span> <span class="nav-text">文件操作漏洞</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#文件包含"><span class="nav-number">2.4.1.</span> <span class="nav-text">文件包含</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#文件包含截断"><span class="nav-number">2.4.2.</span> <span class="nav-text">文件包含截断</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#文件读取"><span class="nav-number">2.4.3.</span> <span class="nav-text">文件读取</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#文件上传"><span class="nav-number">2.4.4.</span> <span class="nav-text">文件上传</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#文件删除"><span class="nav-number">2.4.5.</span> <span class="nav-text">文件删除</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#代码执行"><span class="nav-number">2.5.</span> <span class="nav-text">代码执行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#命令执行"><span class="nav-number">2.6.</span> <span class="nav-text">命令执行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#变量覆盖漏洞"><span class="nav-number">2.7.</span> <span class="nav-text">变量覆盖漏洞</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#逻辑漏洞"><span class="nav-number">2.8.</span> <span class="nav-text">逻辑漏洞</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#判断绕过"><span class="nav-number">2.8.1.</span> <span class="nav-text">判断绕过</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#未die-、exit-、return"><span class="nav-number">2.8.2.</span> <span class="nav-text">未die()、exit()、return()</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#小技巧"><span class="nav-number">2.9.</span> <span class="nav-text">小技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#GPC"><span class="nav-number">2.9.1.</span> <span class="nav-text">GPC</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#编码转换-宽字节注入"><span class="nav-number">2.9.2.</span> <span class="nav-text">编码转换(宽字节注入)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#字符截断"><span class="nav-number">2.9.3.</span> <span class="nav-text">字符截断</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#php-输入输出流"><span class="nav-number">2.9.4.</span> <span class="nav-text">php:&#x2F;&#x2F;输入输出流</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#正则表达没有使用限定符"><span class="nav-number">2.9.5.</span> <span class="nav-text">正则表达没有使用限定符(^ $)</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Phyb0x</span>
+
+  <div class="powered-by">
+  <i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_pv"></span>次
+  </span>
+  </div>
+
+  
+</div>
+
+<!-- 
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+
+
+-->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

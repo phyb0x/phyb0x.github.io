@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Phyb0x's blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言自己在这个框架上栽了也不指一次两次了，有句话说的好再一再二不再三遂打算深入学习一下.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="thinkphp审计">
+<meta property="og:url" content="http://yoursite.com/2018/11/12/thinkphp%E5%AE%A1%E8%AE%A1/index.html">
+<meta property="og:site_name" content="Phyb0x&#39;s blog">
+<meta property="og:description" content="前言自己在这个框架上栽了也不指一次两次了，有句话说的好再一再二不再三遂打算深入学习一下.">
+<meta property="og:image" content="https://i.imgur.com/u0A5xfi.png">
+<meta property="og:image" content="https://i.imgur.com/05wthsu.png">
+<meta property="og:image" content="https://i.imgur.com/WBbv25p.png">
+<meta property="og:image" content="https://i.imgur.com/9Kf13RS.png">
+<meta property="og:image" content="https://i.imgur.com/CbxcAze.png">
+<meta property="og:image" content="https://i.imgur.com/HuuGiF9.png">
+<meta property="og:image" content="https://i.imgur.com/mAJqZoe.png">
+<meta property="article:published_time" content="2018-11-12T01:42:08.000Z">
+<meta property="article:modified_time" content="2020-01-12T01:11:20.000Z">
+<meta property="article:author" content="Phyb0x">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/u0A5xfi.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/11/12/thinkphp审计/"/>
+
+
+
+
+
+  <title>thinkphp审计 | Phyb0x's blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/phyb0x" target="_blank" rel="noopener"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Phyb0x's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/12/thinkphp%E5%AE%A1%E8%AE%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Phyb0x">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://b-ssl.duitang.com/uploads/item/201710/05/20171005185843_HmGKQ.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Phyb0x's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">thinkphp审计</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-12T09:42:08+08:00">
+                2018-11-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" itemprop="url" rel="index">
+                    <span itemprop="name">代码审计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>自己在这个框架上栽了也不指一次两次了，有句话说的好再一再二不再三遂打算深入学习一下.</p>
+<a id="more"></a>
+
+<h3 id="thinkphp配置"><a href="#thinkphp配置" class="headerlink" title="thinkphp配置"></a>thinkphp配置</h3><h5 id="MVC认知"><a href="#MVC认知" class="headerlink" title="MVC认知"></a>MVC认知</h5><p>MVC是一种将视图、控制、数据三者分开的一种开发模式:</p>
+<p>M-Model模型   编写model类，负责逻辑业务、数据处理</p>
+<p>V-View视图    编写html文件，负责前台js页面显示</p>
+<p>C-Controller  编写类文件，IndexController.class.php，对web应用进行控制、修改、删除等操作</p>
+<h5 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h5><p>1、配置数据库，可以将Thinkphp目录下的配置信息复制到Home目录下</p>
+<p>2、开启页面Trace：’SHOW_PAGE_TRACE’ =&gt;true,添加到配置文件<br><img src="https://i.imgur.com/u0A5xfi.png" alt=""></p>
+<p>出现如上情形说明前期准备已经OK。</p>
+<h5 id="控制器"><a href="#控制器" class="headerlink" title="控制器"></a>控制器</h5><p>附上官方手册给的典型控制器类的定义：</p>
+<pre><code>&lt;?php
+namespace Home\Controller;
+use Think\Controller;
+class IndexController extends Controller {
+    public function hello(){
+        echo &apos;hello,thinkphp!&apos;;
+    }
+}</code></pre><p>这里主要说的是A方法，需要跨控制器调用官方提供了快捷调用方法A。</p>
+<pre><code>A(&apos;模块/控制器&apos;)
+//当控制器层名称不是 Controller 时须这样写
+A(&apos;模块/控制器&apos;,&apos;控制器层名称&apos;)</code></pre><p>当我们在审计时遇到A方法一定要跟进查看。</p>
+<h3 id="SQL注入"><a href="#SQL注入" class="headerlink" title="SQL注入"></a>SQL注入</h3><h5 id="where方法"><a href="#where方法" class="headerlink" title="where方法"></a>where方法</h5><p>where方法的参数支持字符串和数组</p>
+<p>在index控制器调用where方法传入字符串参数查询数据</p>
+<pre><code>$data = M(&apos;User&apos;)-&gt;where(&apos;id=&apos;.I(&apos;id&apos;))-&gt;find();
+dump($data);</code></pre><p><img src="https://i.imgur.com/05wthsu.png" alt=""></p>
+<p>可以看到如果没有在I方法中对参数进行过滤或者没有采用预处理、传入数组参数的方式，那么单纯调用where方法传入字符串参数是不安全的，是我们在审计的时候要注意的地方。</p>
+<h4 id="table方法"><a href="#table方法" class="headerlink" title="table方法"></a>table方法</h4><p>通常情况下table方法：</p>
+<p>1、切换操作的数据表；</p>
+<p>2、对多表进行操作；</p>
+<pre><code>test
+M()-&gt;table(I(&apos;table&apos;))-&gt;where(&apos;1=1&apos;)-&gt;find();</code></pre><p>我们构造语句进行简单测试，结果如下图所示：<br><img src="https://i.imgur.com/WBbv25p.png" alt=""><br>可以看到我们传入正确的表名执行的sql语句，只要我们继续构造很容易造成注入。<br><img src="https://i.imgur.com/9Kf13RS.png" alt=""></p>
+<h4 id="field方法-union、join、alias类似"><a href="#field方法-union、join、alias类似" class="headerlink" title="field方法 //union、join、alias类似"></a>field方法 //union、join、alias类似</h4><p>field主要是标识要返回或者操作的字段，可以用于查询和写入操作。</p>
+<p>官方文档给出三种查询方式，字符串、数组、数组别名，主要参数可控都是能产生注入的。</p>
+<pre><code>test
+M(&apos;user&apos;)-&gt;field(array(&apos;id&apos;,&apos;username&apos;=&gt;I(&apos;uname&apos;)))-&gt;select();</code></pre><p><img src="https://i.imgur.com/CbxcAze.png" alt=""><br>闭合引号很容易产生注入</p>
+<h4 id="order-group-having"><a href="#order-group-having" class="headerlink" title="order group having"></a>order group having</h4><pre><code>return !empty($order)?  &apos; ORDER BY &apos;.$order:&apos;&apos;;
+return !empty($group)? &apos; GROUP BY &apos;.$group:&apos;&apos;;
+return  !empty($having)?   &apos; HAVING &apos;.$having:&apos;&apos;;</code></pre><p>我们可以看到源码中他们都是使用拼接方式直接拼接出来的，如果输入可控都存在注入。</p>
+<pre><code>以order举例
+M(&apos;User&apos;)-&gt;where(1=1)-&gt;order(array(&apos;id&apos;=&gt;I(&apos;order&apos;)))-&gt;select();</code></pre><p><img src="https://i.imgur.com/HuuGiF9.png" alt=""><br>//query、execute、聚合方法也是同样道理</p>
+<h4 id="表达式注入"><a href="#表达式注入" class="headerlink" title="表达式注入"></a>表达式注入</h4><p>exp查询的条件不会被当成字符串，所以后面的查询条件可以使用任何SQL支持的语法，包括使用函数和字段名称。查询表达式不仅可用于查询条件，也可以用于数据更新</p>
+<pre><code> $map = array();
+    $map[&apos;id&apos;] = $_GET[&apos;id&apos;];
+    $data = M(&apos;User&apos;)-&gt;where($map)-&gt;find();
+    dump($data);
+}</code></pre><p>可以看到上述代码中参数如果没有用I()方法传入的话就会引发注入，$_GET引入可以传入数组类型参数引发exp注入。<br><img src="https://i.imgur.com/mAJqZoe.png" alt=""></p>
+<h3 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h3><p>停滞了好久,实在没精力了先这样未完待续……</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script type="text/javascript" src="http://jslibs.wuxubj.cn/sweetalert_mini/jquery-1.7.1.min.js"></script>
+  <script src="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.mini.css">
+  <p><span>文章作者:</span><a href="/" title="访问 Phyb0x 的个人博客">Phyb0x</a></p>
+  <p><span>最后更新:</span>2020年01月12日 09:01:20</p>
+  <p><span>原始链接:</span><a href="/2018/11/12/thinkphp%E5%AE%A1%E8%AE%A1/" title="thinkphp审计">http://yoursite.com/2018/11/12/thinkphp%E5%AE%A1%E8%AE%A1/</a></p>
+  <p><span>版权声明:</span>本博客所有文章除特别声明外，均采用 <i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" title="Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)"> BY-NC-SA 3.0 许可协议</a>，转载请注明出处！</p>  
+</div>
+
+      
+    </div>
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>万一有人点了呢！</div>
+  <button id="rewardButton" disable="enable" style="width: 80px;line-height: 38px;text-align: center;font-weight: bold;color: #fff;border-radius: 5px;
+margin:0 20px 20px 0;position: relative;overflow: hidden;color: #8c96a0;text-shadow:1px 1px 1px #fff;border:1px solid #dce1e6;box-shadow: 0 1px 2px #fff inset,0 -1px 0 #a8abae inset;background: -webkit-linear-gradient(top,#f2f3f7,#e4e8ec);background: -moz-linear-gradient(top,#f2f3f7,#e4e8ec);background: linear-gradient(top,#f2f3f7,#e4e8ec);" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    打赏
+  </button>
+  <div id="QR" style="display: none;">
+    
+      <div id="wechat" style="display: inline-block;width:150px;height:150px">
+        <img id="wechat_qr" src="/images/wechat.png" alt="Phyb0x WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+    
+    
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/10/%E4%B8%9A%E5%8A%A1%E5%AE%89%E5%85%A8/" rel="next" title="业务安全">
+                <i class="fa fa-chevron-left"></i> 业务安全
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/01/phpinfo%E4%BF%A1%E6%81%AF%E5%88%A9%E7%94%A8/" rel="prev" title="phpinfo信息利用">
+                phpinfo信息利用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://b-ssl.duitang.com/uploads/item/201710/05/20171005185843_HmGKQ.jpeg"
+                alt="Phyb0x" />
+            
+              <p class="site-author-name" itemprop="name">Phyb0x</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://cdusec.happyhacking.top" title="CDUSEC" target="_blank">CDUSEC</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://nbsec.xyz/" title="大熊's Blog" target="_blank">大熊's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://a3ura.github.io/" title="a3ura's Blog" target="_blank">a3ura's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://a-running-snail2333.github.io/blog.github.io/" title="a-running-snail's Blog" target="_blank">a-running-snail's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#thinkphp配置"><span class="nav-number">2.</span> <span class="nav-text">thinkphp配置</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#MVC认知"><span class="nav-number">2.0.1.</span> <span class="nav-text">MVC认知</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#配置"><span class="nav-number">2.0.2.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制器"><span class="nav-number">2.0.3.</span> <span class="nav-text">控制器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL注入"><span class="nav-number">3.</span> <span class="nav-text">SQL注入</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#where方法"><span class="nav-number">3.0.1.</span> <span class="nav-text">where方法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#table方法"><span class="nav-number">3.1.</span> <span class="nav-text">table方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#field方法-union、join、alias类似"><span class="nav-number">3.2.</span> <span class="nav-text">field方法 &#x2F;&#x2F;union、join、alias类似</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#order-group-having"><span class="nav-number">3.3.</span> <span class="nav-text">order group having</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#表达式注入"><span class="nav-number">3.4.</span> <span class="nav-text">表达式注入</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结尾"><span class="nav-number">4.</span> <span class="nav-text">结尾</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Phyb0x</span>
+
+  <div class="powered-by">
+  <i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_pv"></span>次
+  </span>
+  </div>
+
+  
+</div>
+
+<!-- 
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+
+
+-->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

