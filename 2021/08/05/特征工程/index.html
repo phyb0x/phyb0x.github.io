@@ -1,0 +1,367 @@
+<!DOCTYPE html><html lang="zh"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="Yumi"><title>特征工程 | phyb0x'Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/normalize.css/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/purecss/build/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/purecss/build/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = 'https://hm.baidu.com/hm.js?' + '407830c4543cf3fb1dd23c4a26528c03';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();
+</script><script type="text/javascript" src="//cdn.jsdelivr.net/npm/clipboard/dist/clipboard.min.js"></script><script type="text/javascript" src="//cdn.jsdelivr.net/gh/codeseven/toastr/build/toastr.min.js"></script><link rel="stylesheet" href="//cdn.jsdelivr.net/gh/codeseven/toastr/build/toastr.min.css"><meta name="generator" content="Hexo 5.4.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">特征工程</h1><a id="logo" href="/.">phyb0x'Blog</a><p class="description">智能安全初学者</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> Start</i></a><a href="/archives/"><i class="fa fa-archive"> Archiv</i></a><a href="/about/"><i class="fa fa-user"> Über</i></a><a href="/atom.xml"><i class="fa fa-rss"> RSS</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">特征工程</h1><div class="post-meta">2021-08-05<span> | </span><span class="category"><a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> Hits</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 2.7k</span><span class="post-meta-item-text"> Words</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-clock-o"></i><span class="post-count"> 11</span><span class="post-meta-item-text"> Minutes</span></span></span></div><a class="disqus-comment-count" href="/2021/08/05/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B/#vcomment"><span class="valine-comment-count" data-xid="/2021/08/05/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B/"></span><span> Comment</span></a><div class="post-content"><h3 id="离散变量处理"><a href="#离散变量处理" class="headerlink" title="离散变量处理"></a>离散变量处理</h3><p>离散型变量一般有两种处理方式：LabelEncoder和OneHotEncoder</p>
+<span id="more"></span>
+
+<h4 id="LabelEncoder"><a href="#LabelEncoder" class="headerlink" title="LabelEncoder"></a>LabelEncoder</h4><p>LabelEncoder既可以对文字型内容进行编码，也可以对数值型内容进行编码。(从0开始)</p>
+<pre><code>from sklearn.preprocessing import LabelEncoder
+
+le = LabelEncoder()
+
+le.fit_transform([&#39;天津&#39;,&#39;北京&#39;,&#39;上海&#39;,&#39;南京&#39;,&#39;北京&#39;])
+#array([3, 1, 0, 2, 1], dtype=int64)
+le.transform([&#39;天津&#39;,&#39;北京&#39;,&#39;上海&#39;,&#39;南京&#39;,&#39;北京&#39;])
+#array([3, 1, 0, 2, 1], dtype=int64)
+</code></pre>
+<h4 id="OneHotEncoder"><a href="#OneHotEncoder" class="headerlink" title="OneHotEncoder"></a>OneHotEncoder</h4><p>离散特征中有多少不同的值，就用多少维来表示该特征，是<strong>分类变量</strong>作为<strong>二进制向量</strong>的表示。</p>
+<p>假如我们要计算的文本中一共出现了4个词：猫、狗、牛、羊。向量里每一个位置都代表一个词。所以用 one-hot 来表示就是：</p>
+<p>猫：［1，0，0，0］</p>
+<p>狗：［0，1，0，0］</p>
+<p>牛：［0，0，1，0］</p>
+<p>羊：［0，0，0，1］</p>
+<p>one-hot 的缺点如下：</p>
+<ol>
+<li>无法表达词语之间的关系</li>
+<li>这种过于稀疏的向量，导致计算和存储的效率都不高</li>
+</ol>
+<pre><code>from sklearn.preprocessing import OneHotEncoder
+
+ohe = OneHotEncoder()
+
+x=[[&#39;天津&#39;],[&#39;北京&#39;],[&#39;上海&#39;],[&#39;南京&#39;],[&#39;北京&#39;]]
+
+ohe.fit_transform(x).toarray()
+#array([[0., 0., 0., 1.],
+
+#       [0., 1., 0., 0.],
+
+#       [1., 0., 0., 0.],
+
+#       [0., 0., 1., 0.],
+
+#       [0., 1., 0., 0.]])
+
+ohe.transform(x).toarray()
+#array([[0., 0., 0., 1.],
+
+#       [0., 1., 0., 0.],
+
+#       [1., 0., 0., 0.],
+
+#       [0., 0., 1., 0.],
+
+#       [0., 1., 0., 0.]])
+import pandas as pd
+#get dummy
+dummy_feature = pd.get_dummies(df[&#39;label&#39;],drop_first=True)
+pd.concat([df[[&#39;feature&#39;,&#39;feature1&#39;]],dummy_feature,axis=1])
+</code></pre>
+<h3 id="合并稀疏特征"><a href="#合并稀疏特征" class="headerlink" title="合并稀疏特征"></a>合并稀疏特征</h3><p>​    做特征工程时，我们可能会遇到一个特征我们假设其特征列的符号值为v，其特征存在多种取值，标签label设为y，特征v如果有很多特征值对应标签y是相同的，那么这些v之间是没有意义的，我们称之为稀疏特征，这个时候可以进行合并稀疏特征，可以降低计算成本和错误分类的可能性。</p>
+<pre><code>import pandas as pd
+ 
+def merge_sparse_feature(df):
+    df.loc[(df[&#39;x&#39;] == &#39;one&#39;)
+           | (df[&#39;x&#39;] == &#39;two&#39;)
+           | (df[&#39;x&#39;] == &#39;three&#39;)
+           | (df[&#39;x&#39;] == &#39;four&#39;)
+    , &#39;x&#39;] = &#39;x_1&#39;
+ 
+ 
+    df.loc[(df[&#39;x&#39;] == &#39;five&#39;
+           | (df[&#39;x&#39;] == &#39;six&#39;
+           | (df[&#39;x&#39;] == &#39;seven&#39;
+           | (df[&#39;x&#39;] == &#39;eight&#39;)
+           | (df[&#39;x&#39;] == &#39;nine&#39;)
+    , &#39;x&#39;] = &#39;x_2&#39;
+ 
+    return df
+ 
+</code></pre>
+<h3 id="统计特征"><a href="#统计特征" class="headerlink" title="统计特征"></a>统计特征</h3><p>当前样本集的各种统计信息，包括均值、最大值、1分位数、4分位数等。</p>
+<pre><code>import pandas as pd
+import numpy as np
+series = pd.Series(np.random.randn(500))
+series.describe()
+&#39;&#39;&#39;
+count    500.000000
+mean      -0.063427
+std        1.007670
+min       -3.032698
+25%       -0.749055
+50%        0.001290
+75%        0.607432
+max        2.900834
+dtype: float64
+&#39;&#39;&#39;
+#例子
+temp = data.groupby([&#39;file_id&#39;,feat]
+[feat].count().groupby([&#39;file_id&#39;]).agg([&#39;min&#39;,&#39;max&#39;,&#39;mean&#39;,&#39;median&#39;,&#39;std&#39;,pd.Series.mad,pd.Series.skew,pd.Series.kurt]).add_prefix(feat+&#39;_cnt_&#39;)
+
+dealed_train = pd.concat([dealed_train, temp],axis=1)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>count</td>
+<td>非NA的值数量</td>
+</tr>
+<tr>
+<td>describe</td>
+<td>针对Series和DataFrame列计算汇总统计</td>
+</tr>
+<tr>
+<td>min、max</td>
+<td>计算最小值和最大值</td>
+</tr>
+<tr>
+<td>argmin、argmax</td>
+<td>计算能够获取到最小值和最大值的索引位置</td>
+</tr>
+<tr>
+<td>idxmin、indxmax</td>
+<td>计算能够获取到最小值和最大值的索引值</td>
+</tr>
+<tr>
+<td>quantile</td>
+<td>计算四分位数</td>
+</tr>
+<tr>
+<td>sum</td>
+<td>值的总和</td>
+</tr>
+<tr>
+<td>mean</td>
+<td>值的平均数</td>
+</tr>
+<tr>
+<td>median</td>
+<td>值的算术中位数（第50百分位数）</td>
+</tr>
+<tr>
+<td>mad</td>
+<td>根据平均值计算平均绝对离差</td>
+</tr>
+<tr>
+<td>var</td>
+<td>样本值的方差</td>
+</tr>
+<tr>
+<td>std</td>
+<td>样本值的标准差</td>
+</tr>
+<tr>
+<td>skew</td>
+<td>样本值的偏度</td>
+</tr>
+<tr>
+<td>kurt</td>
+<td>样本值的峰度</td>
+</tr>
+<tr>
+<td>cumsum</td>
+<td>样本值的累计和</td>
+</tr>
+<tr>
+<td>cummin、cummax</td>
+<td>累计最大值和累计最小值</td>
+</tr>
+<tr>
+<td>cumprod</td>
+<td>累计积</td>
+</tr>
+<tr>
+<td>diff</td>
+<td>计算一阶差分（对时间序列很有用）</td>
+</tr>
+<tr>
+<td>pct_change</td>
+<td>计算百分数变化</td>
+</tr>
+</tbody></table>
+<h3 id="特征组合-amp-交叉特征"><a href="#特征组合-amp-交叉特征" class="headerlink" title="特征组合&amp;交叉特征"></a>特征组合&amp;交叉特征</h3><p>采用原始特征 + 组合特征的方法，让模型学习到更复杂的非线性特征。</p>
+<p><strong>离散特征：笛卡尔积</strong></p>
+<p>比如属性A有三个特征，属性B有两个特征，笛卡尔积后就有六个组合特征，然后用one hot 或其他embedding方式给新的特征编码。这种暴力做交叉很可能导致特征稀疏的问题。</p>
+<p><strong>连续特征：</strong></p>
+<p>除了一般对于连续型特征的加减乘除生成新的特征以外，还可以对多个特征(连续特征离散化)进行组合。</p>
+<p><strong>简单特征组合：拼接</strong></p>
+<p>1.user_id&amp;&amp;category: 10001&amp;&amp;女裙，10002&amp;&amp;男士牛仔</p>
+<p>2.user_id&amp;&amp;style:10001&amp;&amp;蕾丝，10002&amp;&amp;全棉</p>
+<p>实际应用过程中不会直接将用户id号和商品组合而产生非常稀疏的矩阵，会事先对用户做一个聚类。</p>
+<p><strong>构造多项式</strong></p>
+<p>很多情况下，多项式特征是通过考虑输入数据中的非线性特征来增加模型的复杂性，它能捕捉到特征中高阶和相互作用的项。 </p>
+<p>多项式生成函数：</p>
+<pre><code>sklearn.preprocessing.PolynomialFeatures(degree=2, interaction_only=False, include_bias=True)
+degree：默认为2，多项式次数(就同几元几次方程中的次数一样)
+interaction_only：是否包含单个自变量**n(n&gt;1)特征数据标识，默认为False，为True则表示去除与自己相乘的情况
+include_bias：是否包含偏差标识，默认为True，为False则表示不包含偏差项
+
+
+from sklearn.preprocessing import PolynomialFeatures
+x =  np.arange(6).reshape(3,2)
+print x
+
+[[0 1]
+ [2 3]
+ [4 5]]
+
+poly = PolynomialFeatures()#默认输入两个参数 
+help(poly)
+poly.fit_transform(x)
+
+array([[  1.,   0.,   1.,   0.,   0.,   1.],
+       [  1.,   2.,   3.,   4.,   6.,   9.],
+       [  1.,   4.,   5.,  16.,  20.,  25.]])
+# 设置参数interaction_only = True，不包含单个自变量****n(n&gt;1)特征数据
+poly = PolynomialFeatures(degree = 2, interaction_only = True)
+poly.fit_transform(X)
+array([[ 1.,  0.,  1.,  0.],
+       [ 1.,  2.,  3.,  6.],
+       [ 1.,  4.,  5., 20.]])
+# 再添加 设置参数include_bias= False，不包含偏差项数据
+poly = PolynomialFeatures(degree = 2, interaction_only = True, include_bias=False)
+array([[ 0.,  1.,  0.],
+       [ 2.,  3.,  6.],
+       [ 4.,  5., 20.]])
+</code></pre>
+<p><strong>模型特征交叉</strong></p>
+<p>GBDT+LR、FM、FFM、DeepFM等</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_34219959/article/details/109693942#GBDTLR_2">模型：特征交叉</a></li>
+</ul>
+<h3 id="特征归一化"><a href="#特征归一化" class="headerlink" title="特征归一化"></a>特征归一化</h3><p>对房屋售价进行预测时，我们的特征仅有房屋面积一项，但是，在实际生活中，卧室数目也一定程度上影响了房屋售价。房屋面积及卧室数量两个特征在数值上差异巨大，如果直接将该样本送入训练，则代价函数的轮廓会是“扁长的”，在找到最优解前，梯度下降的过程不仅是曲折的，也是非常耗时的。数据归一化后，最优解的寻优过程明显会变得平缓，更容易正确的收敛到最优解。</p>
+<ul>
+<li>归一化（normalization）： <img src="https://www.zhihu.com/equation?tex=%5Cfrac%7BX_i-X_%7Bmin%7D%7D%7BX_%7Bmax%7D-X_%7Bmin%7D%7D" alt="[公式]"></li>
+<li>标准化（standardization）： <img src="https://www.zhihu.com/equation?tex=%5Cfrac%7BX_i-%5Cmu%7D%7B%5Csigma%7D" alt="[公式]"></li>
+</ul>
+<p>其中 <img src="https://www.zhihu.com/equation?tex=%5Cmu" alt="[公式]"> 和 <img src="https://www.zhihu.com/equation?tex=%5Csigma" alt="[公式]"> 代表样本的均值和标准差， <img src="https://www.zhihu.com/equation?tex=X_%7Bmax%7D" alt="[公式]"> 为最大值， <img src="https://www.zhihu.com/equation?tex=X_%7Bmin%7D" alt="[公式]"> 为最小值。</p>
+<p>如果对输出结果范围有要求，用归一化。数据较为稳定，不存在极端的最大最小值，用归一化。数据存在异常值和较多噪音，用标准化，可以间接通过中心化避免异常值和极端值的影响。</p>
+<p><strong>归一化</strong></p>
+<pre><code>from sklearn.preprocessing import MinMaxScaler
+def mm():
+    &quot;&quot;&quot;
+    归一化处理
+    :return: NOne
+    &quot;&quot;&quot;
+    mm = MinMaxScaler(feature_range=(2,3))
+    data = mm.fit_transform([[90, 2, 10, 40], [60, 4, 15, 45], [75, 3, 13, 46]])
+    print(data)
+    return None
+if __name__ == &quot;__main__&quot;:
+    mm()
+
+
+
+[[3.         2.         2.         2.        ]
+ [2.         3.         3.         2.83333333]
+ [2.5        2.5        2.6        3.        ]]
+
+Process finished with exit code 0
+</code></pre>
+<p><strong>标准化</strong></p>
+<pre><code>from sklearn.preprocessing import StandardScaler
+def stand():
+    &quot;&quot;&quot;
+    标准化缩放
+    :return:
+    &quot;&quot;&quot;
+    std = StandardScaler()
+
+    data = std.fit_transform([[ 1., -1., 3.],[ 2., 4., 2.],[ 4., 6., -1.]])
+
+    print(data)
+
+    return None
+if __name__ == &quot;__main__&quot;:
+    stand()
+    
+[[-1.06904497 -1.35873244  0.98058068]
+ [-0.26726124  0.33968311  0.39223227]
+ [ 1.33630621  1.01904933 -1.37281295]]
+
+Process finished with exit code 0
+</code></pre>
+<h3 id="连续特征离散化"><a href="#连续特征离散化" class="headerlink" title="连续特征离散化"></a>连续特征离散化</h3><p>​    特征离散化主要针对的是数值型特征，是一种在模型中加入非线性因素的常用手段。</p>
+<h4 id="离散化优势"><a href="#离散化优势" class="headerlink" title="离散化优势"></a>离散化优势</h4><p>链接：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/31989952/answer/54184582">https://www.zhihu.com/question/31989952/answer/54184582</a></p>
+<ol start="0">
+<li><p>离散特征的增加和减少都很容易，易于模型的快速迭代；</p>
+</li>
+<li><p>稀疏向量内积乘法运算速度快，计算结果方便存储，容易扩展；</p>
+</li>
+<li><p>离散化后的特征对异常数据有很强的鲁棒性：比如一个特征是年龄&gt;30是1，否则0。如果特征没有离散化，一个异常数据“年龄300岁”会给模型造成很大的干扰；</p>
+</li>
+<li><p>逻辑回归属于广义线性模型，表达能力受限；单变量离散化为N个后，每个变量有单独的权重，相当于为模型引入了非线性，能够提升模型表达能力，加大拟合；</p>
+</li>
+<li><p>离散化后可以进行特征交叉，由M+N个变量变为M*N个变量，进一步引入非线性，提升表达能力；</p>
+</li>
+<li><p>特征离散化后，模型会更稳定，比如如果对用户年龄离散化，20-30作为一个区间，不会因为一个用户年龄长了一岁就变成一个完全不同的人。当然处于区间相邻处的样本会刚好相反，所以怎么划分区间是门学问；</p>
+</li>
+<li><p>特征离散化以后，起到了简化了逻辑回归模型的作用，降低了模型过拟合的风险。</p>
+</li>
+</ol>
+<h4 id="常用方法"><a href="#常用方法" class="headerlink" title="常用方法"></a>常用方法</h4><p><strong>等区间</strong></p>
+<pre><code>d1 = pd.cut(data,k,labels = range(k))#等宽分成k类
+
+#平均分为5分
+pd.cut(a,5)
+
+#按照给定区间划分
+pd.cut(a,bins=[0,10,20,40,60,100])
+
+#指定labels
+pd.cut(a,bins=[0,10,20,40,60,100],labels=[&quot;婴儿&quot;,&quot;青年&quot;,&quot;中年&quot;,&quot;壮年&quot;,&quot;老年&quot;])
+
+#返回分割后的bins
+pd.cut(a,bins=[0,10,20,40,60,100],labels=[&quot;婴儿&quot;,&quot;青年&quot;,&quot;中年&quot;,&quot;壮年&quot;,&quot;老年&quot;],retbins=True)
+
+#返回x中的数据位于第几个bin
+pd.cut(a,bins=[0,10,20,40,60,100],labels=False)
+</code></pre>
+<p>缺点：对噪点过于敏感，倾向于不均匀的把属性值分布到各个区间，导致有些区间的数值极多，而有些区间极少，严重损坏离散化之后建立的数据模型。</p>
+<p><strong>等频</strong></p>
+<pre><code>k = 5 #设置离散之后的数据段为5
+ 
+#等频率离散化
+w = [1.0*i/k for i in range(k+1)]#计算百分比
+w = data.describe(percentiles = w)[4:4+k+1] #计算各个百分位数
+d2 = pd.cut(data, w, labels = range(k)) #将集合分组
+</code></pre>
+<p><strong>聚类</strong></p>
+<p>​    一维聚类离散包括两个过程：通过聚类算法（K-Means算法）将连续属性值进行聚类，处理聚类之后的到的k个簇，得到每个簇对应的分类值（类似这个簇的标记）。</p>
+<pre><code>from sklearn.cluster import KMeans   #导入kmeans
+kmodel = KMeans(n_clusters = k)      #确定族数
+kmodel.fit(data.values.reshape(len(data),1))    #训练数据集
+c = pd.DataFrame(np.sort(kmodel.cluster_centers_))   #确定中心并排序
+w = c.rolling(2).mean().iloc[1:]      #取移动平均值
+w = [0]+list(w[0])+[data.max()]       #加上最大最小值作为边界值
+w = list(np.sort(w))          #再次排序
+d3 = pd.cut(data,w,labels = range(k))
+</code></pre>
+</div><div id="donate"><link rel="stylesheet" type="text/css" href="/css/donate.css"><script type="text/javascript" src="/js/donate.js" successtext="Copy Successed!"></script><a class="pos-f tr3" id="github" target="_blank" rel="noopener" href="https://github.com/Kaiyuan/donate-page" arget="_blank" title="Github"></a><div id="DonateText">Donate</div><ul class="list pos-f" id="donateBox"><li id="AliPay" qr="/img/airpy.png"></li></ul><div class="pos-f left-100" id="QRBox"><div id="MainBox"></div></div></div><div class="tags"></div><div class="post-nav"><a class="next" href="/2019/01/20/%E8%BF%87Waf/">sql绕安全狗</a></div><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' == 'true' ? true : false;
+var verify = 'false' == 'true' ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'MhBSauY8QdXDPd9mzDsCmUQ8-gzGzoHsz',
+  appKey:'BwJxec1eCc5PCTXUcPKUHRl0',
+  placeholder:'我就只是想看看，字都懒得打...',
+  avatar:'mm',
+  guest_info:guest_info,
+  pageSize:'10'
+})
+</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> Kategorien</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CTF/">CTF</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/">基础漏洞总结</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%84%9A%E6%9C%AC%E5%B7%A5%E5%85%B7/">脚本工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%BF%90%E7%BB%B4/">运维</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> Tags</i></div><div class="tagcloud"></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> Letzte</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2021/08/05/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B/">特征工程</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/20/%E8%BF%87Waf/">sql绕安全狗</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/weblogic%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E6%B1%87%E6%80%BB/">weblogic漏洞利用汇总</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/14/jsonp%E5%AE%89%E5%85%A8/">jsonp安全</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/29/%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/">横向移动</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/28/ew%E5%A4%9A%E7%BA%A7%E8%BD%AC%E5%8F%91/">ew多级转发</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/28/ARP%E6%AC%BA%E9%AA%97/">ARP欺骗</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/25/SSRF%E6%B5%85%E6%9E%90/">SSRF浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/23/xxe%E6%B5%85%E6%9E%90/">xxe浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/21/win%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/">win权限维持</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> Blogroll</i></div><ul></ul><a target="_blank"></a><ul></ul><a target="_blank"></a><ul></ul><a target="_blank"></a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2021 <a href="/." rel="nofollow">phyb0x'Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox/dist/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox/dist/jquery.fancybox.min.css"><script type="text/javascript" src="/js/copycode.js" successtext="Copy Successed!"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>
