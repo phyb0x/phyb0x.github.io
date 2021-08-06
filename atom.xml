@@ -294,7 +294,7 @@ WLS 组件远程代码执行 CVE-2017-10271
     <link href="https://phyb0x.github.io/2018/11/10/test/"/>
     <id>https://phyb0x.github.io/2018/11/10/test/</id>
     <published>2018-11-10T05:27:41.000Z</published>
-    <updated>2021-08-06T13:29:23.767Z</updated>
+    <updated>2021-08-06T13:29:33.063Z</updated>
     
     <content type="html"><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>看了业务安全实战指南做的一点笔记，业务逻辑漏洞挖掘还是要细心每个参数功能点都要把握好。</p><span id="more"></span><p><img src="https://i.imgur.com/h1ihbeP.png"></p><pre><code>kmodel = KMeans(n_clusters = k)      #确定族数</code></pre>]]></content>
     
