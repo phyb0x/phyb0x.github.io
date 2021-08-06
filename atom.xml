@@ -294,9 +294,9 @@ WLS 组件远程代码执行 CVE-2017-10271
     <link href="https://phyb0x.github.io/2018/11/10/test/"/>
     <id>https://phyb0x.github.io/2018/11/10/test/</id>
     <published>2018-11-10T05:27:41.000Z</published>
-    <updated>2021-08-06T13:27:13.871Z</updated>
+    <updated>2021-08-06T13:28:40.803Z</updated>
     
-    <content type="html"><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>看了业务安全实战指南做的一点笔记，业务逻辑漏洞挖掘还是要细心每个参数功能点都要把握好。</p><span id="more"></span><p><img src="https://i.imgur.com/h1ihbeP.png"></p>]]></content>
+    <content type="html"><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>看了业务安全实战指南做的一点笔记，业务逻辑漏洞挖掘还是要细心每个参数功能点都要把握好。</p><span id="more"></span><p><img src="https://i.imgur.com/h1ihbeP.png"></p><pre><code>from sklearn.cluster import KMeans   #导入kmeanskmodel = KMeans(n_clusters = k)      #确定族数kmodel.fit(data.values.reshape(len(data),1))    #训练数据集c = pd.DataFrame(np.sort(kmodel.cluster_centers_))   #确定中心并排序w = c.rolling(2).mean().iloc[1:]      #取移动平均值w = [0]+list(w[0])+[data.max()]       #加上最大最小值作为边界值w = list(np.sort(w))          #再次排序d3 = pd.cut(data,w,labels = range(k))</code></pre>]]></content>
     
     
     <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h3&gt;&lt;p&gt;看了业务安全实战指南做的一点笔记，业务逻辑漏洞挖掘还是要细心每个参数功能点都要把握好。&lt;/p&gt;</summary>
